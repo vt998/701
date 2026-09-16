@@ -79,7 +79,7 @@ function About() {
         <div className="grid gap-3 sm:grid-cols-2">
           {schedule.map(([time, what]) => (
             <div key={time} className="flex items-center gap-4 p-4 toy-card">
-              <span className="shrink-0 rounded-full border-3 border-primary-deep bg-mint px-3 py-1 font-display text-xs font-bold text-primary-deep">
+              <span className="shrink-0 rounded-md border-2 border-primary-deep bg-mint px-3 py-1 font-display text-xs font-bold text-primary-deep">
                 {time}
               </span>
               <span className="text-sm">{what}</span>

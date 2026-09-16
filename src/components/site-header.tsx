@@ -16,7 +16,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-6">
         <Link to="/" className="flex items-center gap-3">
-          <span className="grid size-12 place-items-center rounded-full border-3 border-primary-deep bg-sun font-display text-sm font-bold text-sun-foreground shadow-toy-sm">
+          <span className="grid size-12 place-items-center rounded-md border-2 border-primary-deep bg-sun font-display text-sm font-bold text-sun-foreground shadow-toy-sm">
             701
           </span>
           <span className="leading-tight">
@@ -31,7 +31,7 @@ export function SiteHeader() {
               key={item.to}
               to={item.to}
               activeOptions={{ exact: item.to === "/" }}
-              className="rounded-full px-4 py-2 font-display text-sm font-bold text-foreground transition-colors hover:bg-secondary"
+              className="rounded-md px-4 py-2 font-display text-sm font-bold text-foreground transition-colors hover:bg-secondary"
               activeProps={{ className: "bg-secondary text-primary-deep" }}
             >
               {item.label}
@@ -50,7 +50,7 @@ export function SiteHeader() {
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-label="Меню"
-          className="ml-auto grid size-12 place-items-center rounded-full border-3 border-primary-deep bg-card font-display text-lg shadow-toy-sm md:hidden"
+          className="ml-auto grid size-12 place-items-center rounded-md border-2 border-primary-deep bg-card font-display text-lg shadow-toy-sm md:hidden"
         >
           {open ? "×" : "☰"}
         </button>
@@ -63,7 +63,7 @@ export function SiteHeader() {
               key={item.to}
               to={item.to}
               onClick={() => setOpen(false)}
-              className="rounded-full px-4 py-2 font-display text-sm font-bold"
+              className="rounded-md px-4 py-2 font-display text-sm font-bold"
               activeProps={{ className: "bg-secondary text-primary-deep" }}
               activeOptions={{ exact: item.to === "/" }}
             >
