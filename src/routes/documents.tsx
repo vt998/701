@@ -16,7 +16,7 @@ export const Route = createFileRoute("/documents")({
       },
     ],
   }),
-  component: Documents;
+  component: Documents,
 });
 
 type Doc = { title: string; note: string; file: string; size: string };
