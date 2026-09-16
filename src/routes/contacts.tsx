@@ -77,7 +77,7 @@ function Contacts() {
           <ul className="mt-6 grid gap-3 sm:grid-cols-2">
             {documents.map((d) => (
               <li key={d} className="flex gap-3">
-                <span className="grid size-7 shrink-0 place-items-center rounded-full border-3 border-primary-deep bg-sun text-xs">
+                <span className="grid size-7 shrink-0 place-items-center rounded-md border-2 border-primary-deep bg-sun text-xs">
                   ✓
                 </span>
                 <span className="text-sm">{d}</span>

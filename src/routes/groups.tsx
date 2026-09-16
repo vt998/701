@@ -69,7 +69,7 @@ function Groups() {
           <article key={g.name} className="p-6 toy-card toy-hover">
             <div className="flex flex-wrap items-center gap-3">
               <span
-                className={`rounded-full border-3 border-primary-deep px-3 py-1 font-display text-xs font-bold text-primary-deep ${g.color}`}
+                className={`rounded-md border-2 border-primary-deep px-3 py-1 font-display text-xs font-bold text-primary-deep ${g.color}`}
               >
                 {g.age}
               </span>
@@ -81,7 +81,7 @@ function Groups() {
               {g.activities.map((a) => (
                 <li
                   key={a}
-                  className="rounded-full border-3 border-primary-deep bg-background px-3 py-1 text-xs font-bold"
+                  className="rounded-md border-2 border-primary-deep bg-background px-3 py-1 text-xs font-bold"
                 >
                   {a}
                 </li>

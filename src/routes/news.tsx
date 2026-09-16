@@ -74,12 +74,12 @@ function News() {
               width={816}
               height={816}
               loading="lazy"
-              className="aspect-square w-full rounded-2xl border-3 border-primary-deep object-cover"
+              className="aspect-square w-full rounded-2xl border-2 border-primary-deep object-cover"
             />
             <div>
               <div className="flex flex-wrap items-center gap-3">
                 <span className="font-display text-xs font-bold text-accent">{p.date}</span>
-                <span className="rounded-full border-3 border-primary-deep bg-mint px-2.5 py-0.5 text-xs font-bold text-primary-deep">
+                <span className="rounded-md border-2 border-primary-deep bg-mint px-2.5 py-0.5 text-xs font-bold text-primary-deep">
                   {p.tag}
                 </span>
               </div>
@@ -91,7 +91,7 @@ function News() {
       </section>
 
       <section className="pb-14">
-        <div className="border-3 border-primary-deep bg-primary p-6 text-primary-foreground shadow-toy sm:p-8 rounded-3xl">
+        <div className="border-2 border-primary-deep bg-primary p-6 text-primary-foreground shadow-toy sm:p-8 rounded-3xl">
           <h2 className="font-display text-2xl">Пам’ятка для батьків</h2>
           <ul className="mt-5 grid gap-3 md:grid-cols-3">
             {notices.map((n) => (
