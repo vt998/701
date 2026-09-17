@@ -4,7 +4,7 @@ import gallery2 from "@/assets/gallery-2.jpg";
 import gallery3 from "@/assets/gallery-3.jpg";
 import gallery4 from "@/assets/gallery-4.jpg";
 
-export const Route = createFileRoute("/news")({
+export const Route = createFileRoute("/parents")({
   head: () => ({
     meta: [
       { title: "Новини та оголошення — ЗДО № 701" },

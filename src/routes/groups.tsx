@@ -6,7 +6,7 @@ export const Route = createFileRoute("/groups")({
       { title: "Групи — ЗДО № 701" },
       {
         name: "description",
-        content: "Групи ЗДО № 701 для дітей від 1,5 до 6 років: вік, кількість дітей і заняття.",
+        content: "Групи ЗДО № 701 для дітей від 1 до 6 років: вік, кількість дітей і заняття.",
       },
       { property: "og:title", content: "Групи — ЗДО № 701" },
       {
@@ -20,35 +20,48 @@ export const Route = createFileRoute("/groups")({
 
 const groups = [
   {
-    name: "Малюки",
-    age: "1,5–3 роки",
+    name: "Джерельце",
+    type: "Малюки",
+    age: "1–3 роки",
     kids: "до 15 дітей",
     text: "Мʼяка адаптація, сенсорні ігри, багато руху та обіймів.",
     activities: ["Сенсорика", "Пальчикові ігри", "Музичні хвилинки"],
     color: "bg-sun",
   },
   {
-    name: "Калинка",
-    age: "3–4 роки",
+    name: "Струмочок",
+    type: "Малюки",
+    age: "1–3 роки",
     kids: "до 20 дітей",
-    text: "Розвиток мовлення, перші творчі проєкти та дружба.",
-    activities: ["Мовлення", "Малювання", "Ліплення"],
+    text: "Мʼяка адаптація, багато обіймів і руху.",
+    activities: ["Рухливі ігри", "Малювання", "Ліплення"],
     color: "bg-mint",
   },
   {
     name: "Ромашка",
-    age: "4–5 років",
+    type: "Малюки",
+    age: "1–3 роки",
     kids: "до 20 дітей",
-    text: "Досліди, спільні ігри та пізнання світу навколо.",
-    activities: ["Природа", "Лічба", "Хореографія"],
+    text: "Мʼяка адаптація, багато обіймів і руху.",
+    activities: ["Казки", "Природа", "Хореографія"],
     color: "bg-sun",
   },
   {
     name: "Сонечко",
-    age: "5–6 років",
+    type: "Дорослі малюки",
+    age: "3–6 років",
     kids: "до 22 дітей",
-    text: "Готуємось до школи через гру: букви, лічба, увага.",
-    activities: ["Букви", "Логіка", "Англійська"],
+    text: "Розвиток мовлення й перші творчі проєкти.",
+    activities: ["Мовлення", "Творчість", "Музика"],
+    color: "bg-mint",
+  },
+  {
+    name: "Калинка",
+    type: "Дорослі малюки",
+    age: "4–6 років",
+    kids: "до 22 дітей",
+    text: "Досліди, спільні ігри, пізнання світу.",
+    activities: ["Досліди", "Лічба", "Логіка"],
     color: "bg-mint",
   },
 ];
@@ -59,7 +72,7 @@ function Groups() {
       <section className="py-10">
         <h1 className="font-display text-4xl text-primary-deep sm:text-5xl">Наші групи</h1>
         <p className="mt-4 max-w-prose text-lg text-muted-foreground">
-          У садочку працюють групи для дітей від 1,5 до 6 років. Дитину зараховуємо у групу за віком
+          У садочку працюють групи для дітей від 1 до 6 років. Дитину зараховуємо у групу за віком
           і наявними місцями.
         </p>
       </section>
@@ -73,6 +86,7 @@ function Groups() {
               >
                 {g.age}
               </span>
+              <span className="font-display text-xs font-bold text-accent">{g.type}</span>
               <span className="text-xs text-muted-foreground">{g.kids}</span>
             </div>
             <h2 className="mt-4 font-display text-2xl text-primary-deep">{g.name}</h2>
