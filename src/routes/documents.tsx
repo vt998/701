@@ -14,6 +14,8 @@ export const Route = createFileRoute("/documents")({
         property: "og:description",
         content: "Меню, накази та офіційні документи дитячого садочка № 701 у PDF.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Documents,

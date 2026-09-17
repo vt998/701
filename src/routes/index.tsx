@@ -1,4 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+
+import { Button } from "@/components/ui/button";
 
 import heroImg from "@/assets/hero-kindergarten.jpg";
 import aboutImg from "@/assets/about-classroom.jpg";
@@ -21,45 +24,60 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Затишні групи, творчі заняття, здорове харчування та запис дитини.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Home,
 });
 
 const quickInfo = [
-  { icon: "⏰", title: "Графік роботи", lines: ["Пн–Пт, 7:30–18:30", "Сб, Нд — вихідні"] },
-  { icon: "🏡", title: "Адреса", lines: ["м. Київ, вул. Сонячна, 14", "поруч зупинка «Парк»"] },
-  { icon: "☎️", title: "Телефон", lines: ["+38 (044) 123 70 01", "8:30–17:00"] },
+  { icon: "⏰", title: "Графік роботи", lines: ["Пн–Пт, 7:00–19:00", "Сб, Нд — вихідні"] },
+  {
+    icon: "🏡",
+    title: "Адреса",
+    lines: ["м. Київ, Марганецька вул., 26A, 02192", "кінцева автобуса 33К і маршруток 555 та 211"],
+  },
+  { icon: "☎️", title: "Телефон", lines: ["+38 068 319 68 12", "Kyivstar"] },
 ];
 
 const groups = [
-  { age: "1,5–3 р.", name: "Малюки", text: "Мʼяка адаптація, багато обіймів і руху.", color: "bg-sun" },
-  { age: "3–4 р.", name: "Калинка", text: "Розвиток мовлення й перші творчі проєкти.", color: "bg-mint" },
-  { age: "4–5 р.", name: "Ромашка", text: "Досліди, спільні ігри, пізнання світу.", color: "bg-sun" },
-  { age: "5–6 р.", name: "Сонечко", text: "Готуємось до школи через гру.", color: "bg-mint" },
+  { age: "1–3 р.", type: "Малюки", name: "Джерельце", text: "Мʼяка адаптація, багато обіймів і руху.", color: "bg-sun" },
+  { age: "1–3 р.", type: "Малюки", name: "Струмочок", text: "Мʼяка адаптація, багато обіймів і руху.", color: "bg-mint" },
+  { age: "1–3 р.", type: "Малюки", name: "Ромашка", text: "Мʼяка адаптація, багато обіймів і руху.", color: "bg-sun" },
+  { age: "3–6 р.", type: "Дорослі малюки", name: "Сонечко", text: "Розвиток мовлення й перші творчі проєкти.", color: "bg-mint" },
+  { age: "4–6 р.", type: "Дорослі малюки", name: "Калинка", text: "Досліди, спільні ігри, пізнання світу.", color: "bg-sun" },
 ];
 
 const news = [
-  { date: "22 травня", tag: "Свято", title: "«День квітів» для батьків", text: "О 11:00 у святковій залі." },
-  { date: "24 травня", tag: "Відкриті двері", title: "Екскурсія для нових родин", text: "Початок о 10:00." },
-  { date: "1 червня", tag: "Розклад", title: "Літній режим дня", text: "Більше прогулянок і сну." },
+  { date: "Щодня", tag: "Батькам", title: "День відкритих дверей 24/7", text: "Ми завжди відкриті до спілкування." },
+  { date: "Укриття", tag: "Безпека", title: "Наше укриття", text: "Для учасників освітнього процесу укриття працює 24/7." },
+  { date: "300 осіб", tag: "Місткість", title: "Безпечний простір", text: "Укриття розраховано на 300 осіб." },
 ];
 
 const steps = [
-  { n: "1", title: "Заява", text: "Зателефонуйте або завітайте до адміністрації." },
-  { n: "2", title: "Документи", text: "Свідоцтво про народження та медична картка." },
-  { n: "3", title: "Знайомство", text: "Зустріч із вихователем і екскурсія групою." },
-  { n: "4", title: "Перший день", text: "Плавна адаптація протягом тижня." },
+  { n: "1", title: "Онлайн запис", text: "Заповніть заявку в системі СЕ ЗДО." },
+  { n: "2", title: "Прийняття запрошення", text: "Підтвердьте запрошення до закладу." },
+  { n: "3", title: "Надання документів", text: "Заява про зарахування, свідоцтво про народження та медичні документи." },
+  { n: "4", title: "Знайомство", text: "Зустріч із вихователем і екскурсія групою." },
 ];
 
 const gallery = [
-  { src: gallery1, alt: "Діти малюють за столом у групі" },
-  { src: gallery2, alt: "Діти танцюють і співають у музичній залі" },
-  { src: gallery3, alt: "Діти граються на майданчику з гіркою та гойдалками" },
-  { src: gallery4, alt: "Обід у садочку: суп, фрукти та молоко" },
+  { group: "Джерельце", src: gallery1, alt: "Діти малюють за столом у групі" },
+  { group: "Струмочок", src: gallery2, alt: "Діти танцюють і співають у музичній залі" },
+  { group: "Ромашка", src: gallery3, alt: "Діти граються на майданчику з гіркою та гойдалками" },
+  { group: "Сонечко", src: gallery4, alt: "Обід у садочку: суп, фрукти та молоко" },
+  { group: "Калинка", src: aboutImg, alt: "Затишний куточок групи з кубиками та книжками" },
 ];
 
 function Home() {
+  const galleryGroups = ["Усі", ...groups.map((group) => group.name)];
+  const [selectedGalleryGroup, setSelectedGalleryGroup] = useState("Усі");
+  const visibleGallery =
+    selectedGalleryGroup === "Усі"
+      ? gallery
+      : gallery.filter((item) => item.group === selectedGalleryGroup);
+
   return (
     <main className="mx-auto max-w-6xl px-4 sm:px-6">
       {/* Герой */}
@@ -72,7 +90,7 @@ function Home() {
             Садочок, де дитина росте в теплі й дружбі
           </h1>
           <p className="mt-5 max-w-prose text-lg text-muted-foreground">
-            ЗДО № 701 — затишний дитячий садочок для малюків від 1,5 до 6 років. Ігри, творчість,
+            ЗДО № 701 — затишний дитячий садочок для малюків від 1 до 6 років. Ігри, творчість,
             музика, прогулянки та смачне домашнє харчування щодня.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
@@ -130,14 +148,14 @@ function Home() {
             Місце, куди хочеться повертатися
           </h2>
           <p className="mt-4 max-w-prose text-muted-foreground">
-            Світлі просторі групи, безпечний майданчик і вихователі, які знають кожну дитину на
-            імʼя. Ми поєднуємо гру з навчанням і бережемо дитинство.
+            Світлі просторі групи, безпечний майданчик і вихователі турбуються про дітей кожної
+            секунди. Ми поєднуємо гру з навчанням і бережемо дитинство.
           </p>
           <ul className="mt-6 space-y-3">
             {[
               "Власний ігровий майданчик і зелений двір",
               "Музика, хореографія та художня майстерня",
-              "Пʼятиразове харчування за збалансованим меню",
+              "Трьохразове харчування за збалансованим меню",
               "Логопед і практичний психолог",
             ].map((line) => (
               <li key={line} className="flex gap-3">
@@ -159,7 +177,7 @@ function Home() {
             Усі групи →
           </Link>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {groups.map((g) => (
             <div key={g.name} className="p-5 toy-card toy-hover">
               <span
@@ -167,6 +185,7 @@ function Home() {
               >
                 {g.age}
               </span>
+              <p className="mt-3 font-display text-xs font-bold text-accent">{g.type}</p>
               <h3 className="mt-4 font-display text-xl text-primary-deep">{g.name}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{g.text}</p>
             </div>
@@ -200,10 +219,26 @@ function Home() {
 
       {/* Галерея */}
       <section className="pb-14">
-        <h2 className="mb-6 font-display text-3xl text-primary-deep sm:text-4xl">Наше життя</h2>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {gallery.map((img) => (
-            <div key={img.alt} className="p-2 toy-card toy-hover">
+        <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+          <h2 className="font-display text-3xl text-primary-deep sm:text-4xl">Наше життя</h2>
+          <div className="flex max-w-full gap-2 overflow-x-auto pb-2">
+            {galleryGroups.map((group) => (
+              <Button
+                key={group}
+                type="button"
+                variant={selectedGalleryGroup === group ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedGalleryGroup(group)}
+                className="shrink-0 border-primary-deep font-display font-bold"
+              >
+                {group}
+              </Button>
+            ))}
+          </div>
+        </div>
+        <div className="flex gap-4 overflow-x-auto pb-4">
+          {visibleGallery.map((img) => (
+            <div key={`${img.group}-${img.alt}`} className="min-w-[220px] p-2 toy-card toy-hover sm:min-w-[260px]">
               <img
                 src={img.src}
                 alt={img.alt}
@@ -212,6 +247,7 @@ function Home() {
                 loading="lazy"
                 className="aspect-square w-full rounded-2xl object-cover"
               />
+              <p className="mt-3 px-1 font-display text-sm font-bold text-primary-deep">{img.group}</p>
             </div>
           ))}
         </div>

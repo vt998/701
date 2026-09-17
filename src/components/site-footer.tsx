@@ -11,13 +11,14 @@ export function SiteFooter() {
           <p className="text-sm text-muted-foreground">
             ЗДО № 701 — заклад дошкільної освіти
             <br />
-            Пн–Пт, 7:30–18:30
+            Пн–Пт, 7:00–19:00
           </p>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-4 font-display text-sm font-bold text-primary-deep">
           <Link to="/about">Про заклад</Link>
           <Link to="/groups">Групи</Link>
-          <Link to="/news">Новини</Link>
+          <Link to="/parents">Пам’ятка</Link>
+          <Link to="/documents">Документи</Link>
           <Link to="/contacts">Контакти</Link>
         </div>
       </div>

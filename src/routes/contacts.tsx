@@ -15,16 +15,19 @@ export const Route = createFileRoute("/contacts")({
         property: "og:description",
         content: "Адреса, телефон, графік роботи та документи для запису дитини у ЗДО № 701.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Contacts,
 });
 
 const contacts = [
-  { label: "Адреса", value: "м. Київ, вул. Сонячна, 14" },
-  { label: "Телефон", value: "+38 (044) 123 70 01" },
+  { label: "Адреса", value: "м. Київ, Марганецька вул., 26A, 02192" },
+  { label: "Транспорт", value: "Кінцева автобуса 33К і маршруток 555 та 211" },
+  { label: "Телефон", value: "+38 068 319 68 12, Kyivstar" },
   { label: "Електронна пошта", value: "zdo701@ukr.net" },
-  { label: "Графік роботи", value: "Пн–Пт, 7:30–18:30" },
+  { label: "Графік роботи", value: "Пн–Пт, 7:00–19:00" },
   { label: "Прийом батьків", value: "Пн–Пт, 8:30–17:00" },
 ];
 
@@ -55,7 +58,7 @@ function Contacts() {
               </li>
             ))}
           </ul>
-          <a href="tel:+380441237001" className="mt-6 bg-primary text-primary-foreground toy-btn">
+          <a href="tel:+380683196812" className="mt-6 bg-primary text-primary-foreground toy-btn">
             Зателефонувати
           </a>
         </div>
@@ -85,8 +88,8 @@ function Contacts() {
             ))}
           </ul>
           <p className="mt-6 text-sm text-muted-foreground">
-            Дані на сайті поки що приблизні — надішліть, будь ласка, справжню адресу, телефон і
-            перелік груп, і ми їх одразу замінимо.
+            Оплата за харчування відповідно до наданої квитанції адміністрацією відбувається до 20
+            числа кожного місяця.
           </p>
         </div>
       </section>
