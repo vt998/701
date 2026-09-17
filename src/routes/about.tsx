@@ -15,6 +15,8 @@ export const Route = createFileRoute("/about")({
         property: "og:description",
         content: "Умови, режим дня, харчування та команда педагогів ЗДО № 701.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: About,

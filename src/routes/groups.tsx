@@ -13,6 +13,8 @@ export const Route = createFileRoute("/groups")({
         property: "og:description",
         content: "Вік, наповнюваність і заняття в кожній групі дитячого садочка № 701.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Groups,

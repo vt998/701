@@ -22,6 +22,8 @@ export const Route = createFileRoute("/parents")({
         property: "og:description",
         content: "Адаптація, харчування, медичне обслуговування, режим дня та оплата для родин.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Parents,
@@ -79,8 +81,8 @@ const routinePhotos = [
 ];
 
 function Parents() {
-  const [selectedMealGroup, setSelectedMealGroup] = useState(groupNames[0]);
-  const [selectedRoutineGroup, setSelectedRoutineGroup] = useState(groupNames[0]);
+  const [selectedMealGroup, setSelectedMealGroup] = useState("Джерельце");
+  const [selectedRoutineGroup, setSelectedRoutineGroup] = useState("Джерельце");
 
   return (
     <main className="mx-auto max-w-6xl px-4 sm:px-6">

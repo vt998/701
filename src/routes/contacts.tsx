@@ -15,6 +15,8 @@ export const Route = createFileRoute("/contacts")({
         property: "og:description",
         content: "Адреса, телефон, графік роботи та документи для запису дитини у ЗДО № 701.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Contacts,

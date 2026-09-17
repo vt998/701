@@ -24,6 +24,8 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Затишні групи, творчі заняття, здорове харчування та запис дитини.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Home,
@@ -70,7 +72,7 @@ const gallery = [
 
 function Home() {
   const galleryGroups = ["Усі", ...groups.map((group) => group.name)];
-  const [selectedGalleryGroup, setSelectedGalleryGroup] = useState(galleryGroups[0]);
+  const [selectedGalleryGroup, setSelectedGalleryGroup] = useState("Усі");
   const visibleGallery =
     selectedGalleryGroup === "Усі"
       ? gallery

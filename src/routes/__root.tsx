@@ -84,6 +84,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "ЗДО № 701 — дитячий садочок" },
       {
         name: "description",
+        content:
           "Заклад дошкільної освіти № 701: групи, пам’ятка для батьків, документи, харчування та запис дитини.",
       },
       { property: "og:type", content: "website" },
