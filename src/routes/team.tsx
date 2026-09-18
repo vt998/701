@@ -27,6 +27,10 @@ const team = [
   { role: "Вихователь групи «Ромашка»", name: "Ім’я та прізвище", image: gallery3 },
   { role: "Вихователь групи «Сонечко»", name: "Ім’я та прізвище", image: gallery4 },
   { role: "Вихователь групи «Калинка»", name: "Ім’я та прізвище", image: aboutImg },
+  { role: "Музичний керівник", name: "Ім’я та прізвище", image: gallery2 },
+  { role: "Логопед", name: "Ім’я та прізвище", image: gallery1 },
+  { role: "Практичний психолог", name: "Ім’я та прізвище", image: gallery3 },
+  { role: "Медична сестра", name: "Ім’я та прізвище", image: gallery4 },
 ];
 
 function Team() {
