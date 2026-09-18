@@ -1,5 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
+import gallery1 from "@/assets/gallery-1.jpg";
+import gallery2 from "@/assets/gallery-2.jpg";
+import gallery3 from "@/assets/gallery-3.jpg";
+import gallery4 from "@/assets/gallery-4.jpg";
+
 export const Route = createFileRoute("/groups")({
   head: () => ({
     meta: [
@@ -25,7 +30,6 @@ const groups = [
     name: "Джерельце",
     type: "Малюки",
     age: "1–3 роки",
-    kids: "до 15 дітей",
     text: "Мʼяка адаптація, сенсорні ігри, багато руху та обіймів.",
     activities: ["Сенсорика", "Пальчикові ігри", "Музичні хвилинки"],
     color: "bg-sun",
@@ -34,7 +38,6 @@ const groups = [
     name: "Струмочок",
     type: "Малюки",
     age: "1–3 роки",
-    kids: "до 20 дітей",
     text: "Мʼяка адаптація, багато обіймів і руху.",
     activities: ["Рухливі ігри", "Малювання", "Ліплення"],
     color: "bg-mint",
@@ -43,7 +46,6 @@ const groups = [
     name: "Ромашка",
     type: "Малюки",
     age: "1–3 роки",
-    kids: "до 20 дітей",
     text: "Мʼяка адаптація, багато обіймів і руху.",
     activities: ["Казки", "Природа", "Хореографія"],
     color: "bg-sun",
@@ -52,7 +54,6 @@ const groups = [
     name: "Сонечко",
     type: "Дорослі малюки",
     age: "3–6 років",
-    kids: "до 22 дітей",
     text: "Розвиток мовлення й перші творчі проєкти.",
     activities: ["Мовлення", "Творчість", "Музика"],
     color: "bg-mint",
@@ -61,7 +62,6 @@ const groups = [
     name: "Калинка",
     type: "Дорослі малюки",
     age: "4–6 років",
-    kids: "до 22 дітей",
     text: "Досліди, спільні ігри, пізнання світу.",
     activities: ["Досліди", "Лічба", "Логіка"],
     color: "bg-mint",
@@ -80,8 +80,8 @@ function Groups() {
       </section>
 
       <section className="grid gap-4 pb-14 sm:grid-cols-2">
-        {groups.map((g) => (
-          <article key={g.name} className="p-6 toy-card toy-hover">
+        {groups.map((g, index) => (
+          <article key={g.name} className={`p-6 toy-card toy-hover ${index === groups.length - 1 ? "sm:col-span-2 sm:mx-auto sm:w-[calc(50%-0.5rem)]" : ""}`}>
             <div className="flex flex-wrap items-center gap-3">
               <span
                 className={`rounded-md border-2 border-primary-deep px-3 py-1 font-display text-xs font-bold text-primary-deep ${g.color}`}
@@ -89,7 +89,6 @@ function Groups() {
                 {g.age}
               </span>
               <span className="font-display text-xs font-bold text-accent">{g.type}</span>
-              <span className="text-xs text-muted-foreground">{g.kids}</span>
             </div>
             <h2 className="mt-4 font-display text-2xl text-primary-deep">{g.name}</h2>
             <p className="mt-2 text-muted-foreground">{g.text}</p>
@@ -103,6 +102,19 @@ function Groups() {
                 </li>
               ))}
             </ul>
+            <div className="mt-5 flex gap-3 overflow-x-auto pb-2">
+              {[gallery1, gallery2, gallery3, gallery4].map((image, photoIndex) => (
+                <img
+                  key={`${g.name}-${photoIndex}`}
+                  src={image}
+                  alt={`Життя групи «${g.name}», фото ${photoIndex + 1}`}
+                  width={816}
+                  height={816}
+                  loading="lazy"
+                  className="aspect-square w-36 shrink-0 rounded-md border border-primary-deep object-cover"
+                />
+              ))}
+            </div>
           </article>
         ))}
       </section>

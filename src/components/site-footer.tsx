@@ -1,30 +1,27 @@
 import { Link } from "@tanstack/react-router";
+import { Facebook } from "lucide-react";
 
 export function SiteFooter() {
   return (
-    <footer className="mx-auto max-w-6xl px-4 pb-10 sm:px-6">
-      <div className="flex flex-col items-center justify-between gap-4 px-6 py-7 text-center toy-card sm:flex-row sm:text-left">
-        <div className="flex items-center gap-3">
-          <span className="grid size-11 place-items-center rounded-md border-2 border-primary-deep bg-sun font-display text-xs font-bold text-sun-foreground">
-            701
-          </span>
-          <p className="text-sm text-muted-foreground">
-            ЗДО № 701 — заклад дошкільної освіти
-            <br />
-            Пн–Пт, 7:00–19:00
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center justify-center gap-4 font-display text-sm font-bold text-primary-deep">
-          <Link to="/about">Про заклад</Link>
-          <Link to="/groups">Групи</Link>
-          <Link to="/parents">Пам’ятка</Link>
-          <Link to="/documents">Документи</Link>
-          <Link to="/contacts">Контакти</Link>
-        </div>
+    <footer className="mt-8 border-t border-primary-deep bg-primary-deep text-primary-foreground">
+      <div className="mx-auto grid max-w-6xl gap-6 px-4 py-8 text-sm sm:px-6 md:grid-cols-[1.4fr_1fr_1.4fr_auto] md:items-center">
+        <p>ЗДО № 701 · м. Київ, Марганецька вул., 26A, 02092</p>
+        <p>Зроблено з турботою про кожну дитину</p>
+        <nav className="flex flex-wrap gap-x-4 gap-y-2 font-semibold">
+          <Link to="/privacy" className="hover:underline">Політика конфіденційності</Link>
+          <Link to="/accessibility" className="hover:underline">Доступність</Link>
+        </nav>
+        <a
+          href="https://www.facebook.com/groups/282211470089286/?ref=share_group_link&rdid=zDNuiahAzDYd5S37&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2Fg%2F1DL1kwYXvt%2F%23"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Facebook-група ЗДО № 701"
+          title="Facebook-група ЗДО № 701"
+          className="grid size-10 place-items-center rounded-md border border-primary-foreground/60 hover:bg-primary"
+        >
+          <Facebook aria-hidden="true" className="size-5" />
+        </a>
       </div>
-      <p className="mt-4 text-center text-xs text-muted-foreground">
-        © 2026 ЗДО № 701 · Зроблено з турботою про кожну дитину
-      </p>
     </footer>
   );
 }
