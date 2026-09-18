@@ -123,14 +123,6 @@ function Documents() {
         ))}
       </section>
 
-      <section className="pb-14">
-        <div className="rounded-3xl border-2 border-primary-deep bg-primary p-6 text-primary-foreground shadow-toy sm:p-8">
-          <h2 className="font-display text-2xl">Потрібен документ, якого немає?</h2>
-          <p className="mt-3 max-w-prose">
-            Напишіть або зателефонуйте до адміністрації — додамо файл на сайт.
-          </p>
-        </div>
-      </section>
     </main>
   );
 }
