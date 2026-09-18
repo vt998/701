@@ -36,7 +36,7 @@ const quickInfo = [
   {
     icon: "🏡",
     title: "Адреса",
-    lines: ["м. Київ, Марганецька вул., 26A, 02192", "кінцева автобуса 33К і маршруток 555 та 211"],
+    lines: ["м. Київ, Марганецька вул., 26A, 02092", "Кінцева: 33К, 555, 211"],
   },
   { icon: "☎️", title: "Телефон", lines: ["+38 068 319 68 12", "Kyivstar"] },
 ];
@@ -51,8 +51,7 @@ const groups = [
 
 const news = [
   { date: "Щодня", tag: "Батькам", title: "День відкритих дверей 24/7", text: "Ми завжди відкриті до спілкування." },
-  { date: "Укриття", tag: "Безпека", title: "Наше укриття", text: "Для учасників освітнього процесу укриття працює 24/7." },
-  { date: "300 осіб", tag: "Місткість", title: "Безпечний простір", text: "Укриття розраховано на 300 осіб." },
+  { date: "24/7", tag: "Безпека", title: "Наше укриття", text: "Для учасників освітнього процесу укриття працює цілодобово та розраховане на 300 осіб." },
 ];
 
 const steps = [
@@ -62,20 +61,27 @@ const steps = [
   { n: "4", title: "Знайомство", text: "Зустріч із вихователем і екскурсія групою." },
 ];
 
-const gallery = [
-  { group: "Джерельце", src: gallery1, alt: "Діти малюють за столом у групі" },
-  { group: "Струмочок", src: gallery2, alt: "Діти танцюють і співають у музичній залі" },
-  { group: "Ромашка", src: gallery3, alt: "Діти граються на майданчику з гіркою та гойдалками" },
-  { group: "Сонечко", src: gallery4, alt: "Обід у садочку: суп, фрукти та молоко" },
-  { group: "Калинка", src: aboutImg, alt: "Затишний куточок групи з кубиками та книжками" },
+const galleryImages = [
+  { src: gallery1, alt: "Діти малюють за столом у групі" },
+  { src: gallery2, alt: "Діти танцюють і співають у музичній залі" },
+  { src: gallery3, alt: "Діти граються на майданчику" },
+  { src: gallery4, alt: "Діти обідають у садочку" },
 ];
+
+const gallery = groups.flatMap((group, groupIndex) =>
+  galleryImages.map((image, imageIndex) => ({
+    group: group.name,
+    src: galleryImages[(imageIndex + groupIndex) % galleryImages.length]?.src ?? image.src,
+    alt: `${image.alt}, група «${group.name}»`,
+  })),
+);
 
 function Home() {
   const galleryGroups = ["Усі", ...groups.map((group) => group.name)];
   const [selectedGalleryGroup, setSelectedGalleryGroup] = useState("Усі");
   const visibleGallery =
     selectedGalleryGroup === "Усі"
-      ? gallery
+      ? galleryImages.map((image) => ({ ...image, group: "Усі групи" }))
       : gallery.filter((item) => item.group === selectedGalleryGroup);
 
   return (
@@ -90,17 +96,10 @@ function Home() {
             Садочок, де дитина росте в теплі й дружбі
           </h1>
           <p className="mt-5 max-w-prose text-lg text-muted-foreground">
-            ЗДО № 701 — затишний дитячий садочок для малюків від 1 до 6 років. Ігри, творчість,
-            музика, прогулянки та смачне домашнє харчування щодня.
+            Дитячий садок пишається тим, що дотримується найвищих стандартів освіти та виховання.
+            Наш сумлінний персонал прагне забезпечити сприятливе середовище, в якому буде
+            розвиватися ваша дитина.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/contacts" className="bg-primary text-primary-foreground toy-btn">
-              Записати дитину
-            </Link>
-            <Link to="/groups" className="bg-card text-primary-deep toy-btn">
-              Наші групи
-            </Link>
-          </div>
         </div>
         <div className="overflow-hidden p-3 toy-card">
           <img
@@ -200,7 +199,7 @@ function Home() {
             <h2 className="font-display text-3xl">Дошка оголошень</h2>
             <span className="font-display text-sm opacity-80">оновлено цього тижня</span>
           </div>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2">
             {news.map((n) => (
               <article key={n.title} className="p-5 text-foreground toy-card toy-hover">
                 <div className="flex items-center justify-between">

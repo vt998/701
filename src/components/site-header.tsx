@@ -3,7 +3,7 @@ import { useState } from "react";
 
 const nav = [
   { to: "/", label: "Головна" },
-  { to: "/about", label: "Про заклад" },
+  { to: "/team", label: "Колектив" },
   { to: "/groups", label: "Групи" },
   { to: "/parents", label: "Пам’ятка" },
   { to: "/documents", label: "Документи" },
@@ -16,10 +16,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-6">
-        <Link to="/" className="flex items-center gap-3">
-          <span className="grid size-12 place-items-center rounded-md border-2 border-primary-deep bg-sun font-display text-sm font-bold text-sun-foreground shadow-toy-sm">
-            701
-          </span>
+        <Link to="/" className="flex items-center">
           <span className="leading-tight">
             <span className="block font-display text-lg font-bold text-primary-deep">ЗДО № 701</span>
             <span className="block text-xs text-muted-foreground">дитячий садочок</span>
@@ -39,13 +36,6 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-
-        <Link
-          to="/contacts"
-          className="ml-auto hidden bg-primary text-primary-foreground toy-btn md:ml-2 md:inline-flex"
-        >
-          Записати дитину
-        </Link>
 
         <button
           type="button"
