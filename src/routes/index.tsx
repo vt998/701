@@ -81,7 +81,7 @@ function Home() {
   const [selectedGalleryGroup, setSelectedGalleryGroup] = useState("Усі");
   const visibleGallery =
     selectedGalleryGroup === "Усі"
-      ? gallery
+      ? galleryImages.map((image) => ({ ...image, group: "Усі групи" }))
       : gallery.filter((item) => item.group === selectedGalleryGroup);
 
   return (

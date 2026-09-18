@@ -23,8 +23,8 @@ export const Route = createFileRoute("/contacts")({
 });
 
 const contacts = [
-  { label: "Адреса", value: "м. Київ, Марганецька вул., 26A, 02192" },
-  { label: "Транспорт", value: "Кінцева автобуса 33К і маршруток 555 та 211" },
+  { label: "Адреса", value: "м. Київ, Марганецька вул., 26A, 02092" },
+  { label: "Транспорт", value: "Кінцева: 33К, 555, 211" },
   { label: "Телефон", value: "+38 068 319 68 12, Kyivstar" },
   { label: "Електронна пошта", value: "zdo701@ukr.net" },
   { label: "Графік роботи", value: "Пн–Пт, 7:00–19:00" },

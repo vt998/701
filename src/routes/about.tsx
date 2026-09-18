@@ -52,18 +52,6 @@ function About() {
             ЗДО № 701 — комунальний заклад дошкільної освіти для дітей від 1 до 6 років. У нас
             світлі групи, безпечний майданчик, власний зелений двір, музична та спортивна зали.
           </p>
-          <div className="mt-8 grid grid-cols-3 gap-4">
-            {[
-              ["5", "груп"],
-              ["280", "дітей"],
-              ["30", "працівників"],
-            ].map(([num, label]) => (
-              <div key={label} className="p-4 text-center toy-card">
-                <p className="font-display text-2xl font-bold text-primary">{num}</p>
-                <p className="text-xs text-muted-foreground">{label}</p>
-              </div>
-            ))}
-          </div>
         </div>
         <div className="p-3 toy-card">
           <img
