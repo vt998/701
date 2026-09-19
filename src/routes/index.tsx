@@ -3,12 +3,13 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
+import { ZoomImage } from "@/components/zoom-image";
+import { galleryImages, groups } from "@/lib/groups";
+
 import heroImg from "@/assets/hero-kindergarten.jpg";
 import aboutImg from "@/assets/about-classroom.jpg";
-import gallery1 from "@/assets/gallery-1.jpg";
-import gallery2 from "@/assets/gallery-2.jpg";
-import gallery3 from "@/assets/gallery-3.jpg";
-import gallery4 from "@/assets/gallery-4.jpg";
+
+const ENROLL_URL = "https://portal.kyiv.digital/service/Zapys-do-sadochka";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -41,14 +42,6 @@ const quickInfo = [
   { icon: "☎️", title: "Телефон", lines: ["+38 068 319 68 12", "Kyivstar"] },
 ];
 
-const groups = [
-  { age: "1–3 р.", type: "Малюки", name: "Джерельце", text: "Мʼяка адаптація, багато обіймів і руху.", color: "bg-sun" },
-  { age: "1–3 р.", type: "Малюки", name: "Струмочок", text: "Мʼяка адаптація, багато обіймів і руху.", color: "bg-mint" },
-  { age: "1–3 р.", type: "Малюки", name: "Ромашка", text: "Мʼяка адаптація, багато обіймів і руху.", color: "bg-sun" },
-  { age: "3–6 р.", type: "Дорослі малюки", name: "Сонечко", text: "Розвиток мовлення й перші творчі проєкти.", color: "bg-mint" },
-  { age: "4–6 р.", type: "Дорослі малюки", name: "Калинка", text: "Досліди, спільні ігри, пізнання світу.", color: "bg-sun" },
-];
-
 const news = [
   { date: "Щодня", tag: "Батькам", title: "День відкритих дверей 24/7", text: "Ми завжди відкриті до спілкування." },
   { date: "24/7", tag: "Безпека", title: "Наше укриття", text: "Для учасників освітнього процесу укриття працює цілодобово та розраховане на 300 осіб." },
@@ -57,32 +50,23 @@ const news = [
 const steps = [
   { n: "1", title: "Онлайн запис", text: "Заповніть заявку в системі СЕ ЗДО." },
   { n: "2", title: "Прийняття запрошення", text: "Підтвердьте запрошення до закладу." },
-  { n: "3", title: "Надання документів", text: "Заява про зарахування, свідоцтво про народження та медичні документи." },
+  {
+    n: "3",
+    title: "Надання документів",
+    text: "Заява про зарахування, копія та оригінал свідоцтва про народження дитини та медичні документи (медична довідка про стан здоров’я дитини та карта профілактичних щеплень), згода на обробку персональних даних.",
+  },
   { n: "4", title: "Знайомство", text: "Зустріч із вихователем і екскурсія групою." },
 ];
 
-const galleryImages = [
-  { src: gallery1, alt: "Діти малюють за столом у групі" },
-  { src: gallery2, alt: "Діти танцюють і співають у музичній залі" },
-  { src: gallery3, alt: "Діти граються на майданчику" },
-  { src: gallery4, alt: "Діти обідають у садочку" },
-];
-
-const gallery = groups.flatMap((group, groupIndex) =>
-  galleryImages.map((image, imageIndex) => ({
-    group: group.name,
-    src: galleryImages[(imageIndex + groupIndex) % galleryImages.length]?.src ?? image.src,
-    alt: `${image.alt}, група «${group.name}»`,
-  })),
-);
+const groupNames = groups.map((g) => g.name);
 
 function Home() {
-  const galleryGroups = ["Усі", ...groups.map((group) => group.name)];
+  const galleryGroups = ["Усі", ...groupNames];
   const [selectedGalleryGroup, setSelectedGalleryGroup] = useState("Усі");
   const visibleGallery =
     selectedGalleryGroup === "Усі"
-      ? galleryImages.map((image) => ({ ...image, group: "Усі групи" }))
-      : gallery.filter((item) => item.group === selectedGalleryGroup);
+      ? galleryImages
+      : (groups.find((g) => g.name === selectedGalleryGroup)?.photos ?? galleryImages);
 
   return (
     <main className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -90,7 +74,7 @@ function Home() {
       <section className="grid items-center gap-8 py-10 lg:grid-cols-2 lg:py-14">
         <div>
           <span className="inline-flex items-center gap-2 rounded-md border-2 border-primary-deep bg-sun px-4 py-1.5 font-display text-xs font-bold text-sun-foreground">
-            🌻 Набір на 2026/27 відкрито
+            🌻 Набір на поточний навчальний рік відкрито
           </span>
           <h1 className="mt-5 font-display text-4xl leading-tight text-primary-deep sm:text-5xl">
             Садочок, де дитина росте в теплі й дружбі
@@ -100,6 +84,7 @@ function Home() {
             Наш сумлінний персонал прагне забезпечити сприятливе середовище, в якому буде
             розвиватися ваша дитина.
           </p>
+          <p className="mt-4 max-w-prose font-display text-lg text-primary-deep">__________</p>
         </div>
         <div className="overflow-hidden p-3 toy-card">
           <img
@@ -176,9 +161,14 @@ function Home() {
             Усі групи →
           </Link>
         </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {groups.map((g) => (
-            <div key={g.name} className="p-5 toy-card toy-hover">
+            <Link
+              key={g.slug}
+              to="/groups/$slug"
+              params={{ slug: g.slug }}
+              className="p-5 toy-card toy-hover"
+            >
               <span
                 className={`inline-block rounded-md border-2 border-primary-deep px-3 py-1 font-display text-xs font-bold text-primary-deep ${g.color}`}
               >
@@ -187,7 +177,7 @@ function Home() {
               <p className="mt-3 font-display text-xs font-bold text-accent">{g.type}</p>
               <h3 className="mt-4 font-display text-xl text-primary-deep">{g.name}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{g.text}</p>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
@@ -195,10 +185,7 @@ function Home() {
       {/* Дошка оголошень */}
       <section className="pb-14">
         <div className="border-2 border-primary-deep bg-primary p-6 text-primary-foreground shadow-toy sm:p-8 rounded-3xl">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-            <h2 className="font-display text-3xl">Дошка оголошень</h2>
-            <span className="font-display text-sm opacity-80">оновлено цього тижня</span>
-          </div>
+          <h2 className="mb-6 font-display text-3xl">Дошка оголошень</h2>
           <div className="grid gap-4 md:grid-cols-2">
             {news.map((n) => (
               <article key={n.title} className="p-5 text-foreground toy-card toy-hover">
@@ -236,17 +223,18 @@ function Home() {
           </div>
         </div>
         <div className="flex gap-4 overflow-x-auto pb-4">
-          {visibleGallery.map((img) => (
-            <div key={`${img.group}-${img.alt}`} className="min-w-[220px] p-2 toy-card toy-hover sm:min-w-[260px]">
-              <img
+          {visibleGallery.map((img, index) => (
+            <div
+              key={`${selectedGalleryGroup}-${img.alt}-${index}`}
+              className="min-w-[220px] p-2 toy-card toy-hover sm:min-w-[260px]"
+            >
+              <ZoomImage
                 src={img.src}
                 alt={img.alt}
                 width={816}
                 height={816}
-                loading="lazy"
                 className="aspect-square w-full rounded-2xl object-cover"
               />
-              <p className="mt-3 px-1 font-display text-sm font-bold text-primary-deep">{img.group}</p>
             </div>
           ))}
         </div>
@@ -270,9 +258,19 @@ function Home() {
               </div>
             ))}
           </div>
-          <Link to="/contacts" className="mt-8 bg-primary text-primary-foreground toy-btn">
-            Звʼязатися з нами
-          </Link>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a
+              href={ENROLL_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="bg-primary text-primary-foreground toy-btn"
+            >
+              Записати дитину
+            </a>
+            <Link to="/contacts" className="bg-card text-primary-deep toy-btn">
+              Звʼязатися з нами
+            </Link>
+          </div>
         </div>
       </section>
     </main>

@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import heroImg from "@/assets/hero-kindergarten.jpg";
-
 export const Route = createFileRoute("/contacts")({
   head: () => ({
     meta: [
@@ -28,15 +26,18 @@ const contacts = [
   { label: "Телефон", value: "+38 068 319 68 12, Kyivstar" },
   { label: "Електронна пошта", value: "zdo701@ukr.net" },
   { label: "Графік роботи", value: "Пн–Пт, 7:00–19:00" },
-  { label: "Прийом батьків", value: "Пн–Пт, 8:30–17:00" },
+  { label: "Прийом батьків", value: "Пн–Пт, 8:30–16:00" },
 ];
 
 const documents = [
-  "Заява батьків або опікуна",
-  "Копія свідоцтва про народження дитини",
-  "Медична довідка форми 026/о та карта профілактичних щеплень",
-  "Копія паспорта одного з батьків",
+  "Заява про зарахування",
+  "Копія та оригінал свідоцтва про народження дитини",
+  "Медичні документи: медична довідка про стан здоров’я дитини та карта профілактичних щеплень",
+  "Згода на обробку персональних даних",
 ];
+
+const mapQuery = encodeURIComponent("Марганецька вулиця 26А, Київ");
+const mapLink = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
 
 function Contacts() {
   return (
@@ -63,14 +64,20 @@ function Contacts() {
           </a>
         </div>
         <div className="p-3 toy-card">
-          <img
-            src={heroImg}
-            alt="Будівля дитячого садочка № 701 із зеленим дахом"
-            width={1440}
-            height={1008}
+          <iframe
+            title="Карта — ЗДО № 701 на Google Картах"
+            src={`https://maps.google.com/maps?q=${mapQuery}&z=16&output=embed`}
             loading="lazy"
-            className="w-full rounded-2xl"
+            className="h-72 w-full rounded-2xl border-0 sm:h-80"
           />
+          <a
+            href={mapLink}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-3 inline-block font-display text-sm font-bold text-accent hover:underline"
+          >
+            Відкрити в Google Картах →
+          </a>
         </div>
       </section>
 

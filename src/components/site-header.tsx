@@ -19,7 +19,7 @@ export function SiteHeader() {
         <Link to="/" className="flex items-center">
           <span className="leading-tight">
             <span className="block font-display text-lg font-bold text-primary-deep">ЗДО № 701</span>
-            <span className="block text-xs text-muted-foreground">дитячий садочок</span>
+            <span className="block text-xs text-muted-foreground">заклад дошкільної освіти</span>
           </span>
         </Link>
 

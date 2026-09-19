@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { ZoomImage } from "@/components/zoom-image";
 
 import aboutImg from "@/assets/about-classroom.jpg";
 import gallery1 from "@/assets/gallery-1.jpg";
@@ -30,6 +31,8 @@ export const Route = createFileRoute("/parents")({
 });
 
 const groupNames = ["Джерельце", "Струмочок", "Ромашка", "Сонечко", "Калинка"];
+
+const weekdays = ["Понеділок", "Вівторок", "Середа", "Четвер", "П’ятниця"];
 
 const adaptation = [
   {
@@ -81,8 +84,8 @@ const routinePhotos = [
 ];
 
 function Parents() {
-  const [selectedMealGroup, setSelectedMealGroup] = useState("Джерельце");
-  const [selectedRoutineGroup, setSelectedRoutineGroup] = useState("Джерельце");
+  const [selectedMealDay, setSelectedMealDay] = useState(weekdays[0]!);
+  const [selectedRoutineGroup, setSelectedRoutineGroup] = useState(groupNames[0]!);
 
   return (
     <main className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -98,12 +101,11 @@ function Parents() {
         <div className="grid gap-5 md:grid-cols-3">
           {adaptation.map((item) => (
             <article key={item.title} className="p-3 toy-card toy-hover">
-              <img
+              <ZoomImage
                 src={item.img}
                 alt={item.alt}
                 width={816}
                 height={816}
-                loading="lazy"
                 className="aspect-square w-full rounded-md object-cover"
               />
               <div className="p-3">
@@ -119,31 +121,30 @@ function Parents() {
         <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <h2 className="font-display text-3xl text-primary-deep">Харчування</h2>
           <div className="flex max-w-full gap-2 overflow-x-auto pb-2">
-            {groupNames.map((group) => (
+            {weekdays.map((day) => (
               <Button
-                key={group}
+                key={day}
                 type="button"
-                variant={selectedMealGroup === group ? "default" : "outline"}
+                variant={selectedMealDay === day ? "default" : "outline"}
                 size="sm"
-                onClick={() => setSelectedMealGroup(group)}
+                onClick={() => setSelectedMealDay(day)}
                 className="shrink-0 border-primary-deep font-display font-bold"
               >
-                {group}
+                {day}
               </Button>
             ))}
           </div>
         </div>
         <div className="p-5 toy-card">
-          <p className="font-display text-xl text-primary-deep">{selectedMealGroup}</p>
+          <p className="font-display text-xl text-primary-deep">{selectedMealDay}</p>
           <div className="mt-4 grid gap-4 md:grid-cols-3">
             {mealPhotos.map((meal) => (
-              <article key={`${selectedMealGroup}-${meal.meal}`} className="rounded-md bg-muted p-3">
-                <img
+              <article key={`${selectedMealDay}-${meal.meal}`} className="rounded-md bg-muted p-3">
+                <ZoomImage
                   src={meal.img}
-                  alt={`${meal.alt} для групи ${selectedMealGroup}`}
+                  alt={`${meal.alt}, ${selectedMealDay}`}
                   width={816}
                   height={816}
-                  loading="lazy"
                   className="aspect-square w-full rounded-md border border-primary-deep object-cover"
                 />
                 <h3 className="mt-3 font-display text-lg text-primary-deep">{meal.meal}</h3>
@@ -158,12 +159,11 @@ function Parents() {
         <div className="grid gap-5 md:grid-cols-2">
           {medical.map((item) => (
             <article key={item.title} className="grid gap-4 p-4 toy-card sm:grid-cols-[180px_1fr]">
-              <img
+              <ZoomImage
                 src={item.img}
                 alt={item.alt}
                 width={816}
                 height={816}
-                loading="lazy"
                 className="aspect-square w-full rounded-md object-cover"
               />
               <div>
@@ -195,17 +195,18 @@ function Parents() {
         </div>
         <div className="flex gap-4 overflow-x-auto pb-4">
           {routinePhotos.map((step) => (
-            <article key={`${selectedRoutineGroup}-${step.title}`} className="min-w-[230px] p-3 toy-card toy-hover sm:min-w-[280px]">
-              <img
+            <article
+              key={`${selectedRoutineGroup}-${step.title}`}
+              className="min-w-[230px] p-3 toy-card toy-hover sm:min-w-[280px]"
+            >
+              <ZoomImage
                 src={step.img}
-                alt={`${step.alt} для групи ${selectedRoutineGroup}`}
+                alt={step.alt}
                 width={816}
                 height={816}
-                loading="lazy"
                 className="aspect-square w-full rounded-md object-cover"
               />
               <h3 className="mt-3 font-display text-lg text-primary-deep">{step.title}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">Група {selectedRoutineGroup}</p>
             </article>
           ))}
         </div>
