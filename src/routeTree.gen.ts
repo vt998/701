@@ -18,6 +18,7 @@ import { Route as GroupsRouteImport } from './routes/groups'
 import { Route as ParentsRouteImport } from './routes/parents'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as TeamRouteImport } from './routes/team'
+import { Route as GroupsSlugRouteImport } from './routes/groups.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -64,6 +65,11 @@ const TeamRoute = TeamRouteImport.update({
   path: '/team',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GroupsSlugRoute = GroupsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => GroupsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -71,10 +77,11 @@ export interface FileRoutesByFullPath {
   '/accessibility': typeof AccessibilityRoute
   '/contacts': typeof ContactsRoute
   '/documents': typeof DocumentsRoute
-  '/groups': typeof GroupsRoute
+  '/groups': typeof GroupsRouteWithChildren
   '/parents': typeof ParentsRoute
   '/privacy': typeof PrivacyRoute
   '/team': typeof TeamRoute
+  '/groups/$slug': typeof GroupsSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -82,10 +89,11 @@ export interface FileRoutesByTo {
   '/accessibility': typeof AccessibilityRoute
   '/contacts': typeof ContactsRoute
   '/documents': typeof DocumentsRoute
-  '/groups': typeof GroupsRoute
+  '/groups': typeof GroupsRouteWithChildren
   '/parents': typeof ParentsRoute
   '/privacy': typeof PrivacyRoute
   '/team': typeof TeamRoute
+  '/groups/$slug': typeof GroupsSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -94,10 +102,11 @@ export interface FileRoutesById {
   '/accessibility': typeof AccessibilityRoute
   '/contacts': typeof ContactsRoute
   '/documents': typeof DocumentsRoute
-  '/groups': typeof GroupsRoute
+  '/groups': typeof GroupsRouteWithChildren
   '/parents': typeof ParentsRoute
   '/privacy': typeof PrivacyRoute
   '/team': typeof TeamRoute
+  '/groups/$slug': typeof GroupsSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,6 +120,7 @@ export interface FileRouteTypes {
     | '/parents'
     | '/privacy'
     | '/team'
+    | '/groups/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -122,6 +132,7 @@ export interface FileRouteTypes {
     | '/parents'
     | '/privacy'
     | '/team'
+    | '/groups/$slug'
   id:
     | '__root__'
     | '/'
@@ -133,6 +144,7 @@ export interface FileRouteTypes {
     | '/parents'
     | '/privacy'
     | '/team'
+    | '/groups/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -141,7 +153,7 @@ export interface RootRouteChildren {
   AccessibilityRoute: typeof AccessibilityRoute
   ContactsRoute: typeof ContactsRoute
   DocumentsRoute: typeof DocumentsRoute
-  GroupsRoute: typeof GroupsRoute
+  GroupsRoute: typeof GroupsRouteWithChildren
   ParentsRoute: typeof ParentsRoute
   PrivacyRoute: typeof PrivacyRoute
   TeamRoute: typeof TeamRoute
@@ -212,8 +224,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/groups/$slug': {
+      id: '/groups/$slug'
+      path: '/$slug'
+      fullPath: '/groups/$slug'
+      preLoaderRoute: typeof GroupsSlugRouteImport
+      parentRoute: typeof GroupsRoute
+    }
   }
 }
+
+interface GroupsRouteChildren {
+  GroupsSlugRoute: typeof GroupsSlugRoute
+}
+
+const GroupsRouteChildren: GroupsRouteChildren = {
+  GroupsSlugRoute: GroupsSlugRoute,
+}
+
+const GroupsRouteWithChildren =
+  GroupsRoute._addFileChildren(GroupsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -221,7 +251,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccessibilityRoute: AccessibilityRoute,
   ContactsRoute: ContactsRoute,
   DocumentsRoute: DocumentsRoute,
-  GroupsRoute: GroupsRoute,
+  GroupsRoute: GroupsRouteWithChildren,
   ParentsRoute: ParentsRoute,
   PrivacyRoute: PrivacyRoute,
   TeamRoute: TeamRoute,
