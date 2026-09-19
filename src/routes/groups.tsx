@@ -1,9 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import gallery1 from "@/assets/gallery-1.jpg";
-import gallery2 from "@/assets/gallery-2.jpg";
-import gallery3 from "@/assets/gallery-3.jpg";
-import gallery4 from "@/assets/gallery-4.jpg";
+import { groups } from "@/lib/groups";
 
 export const Route = createFileRoute("/groups")({
   head: () => ({
@@ -11,12 +8,12 @@ export const Route = createFileRoute("/groups")({
       { title: "Групи — ЗДО № 701" },
       {
         name: "description",
-        content: "Групи ЗДО № 701 для дітей від 1 до 6 років: вік, кількість дітей і заняття.",
+        content: "Групи ЗДО № 701 для дітей від 1 до 6 років: вік, заняття та фото кожної групи.",
       },
       { property: "og:title", content: "Групи — ЗДО № 701" },
       {
         property: "og:description",
-        content: "Вік, наповнюваність і заняття в кожній групі дитячого садочка № 701.",
+        content: "Вік, заняття та фото кожної групи дитячого садочка № 701.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -25,63 +22,25 @@ export const Route = createFileRoute("/groups")({
   component: Groups,
 });
 
-const groups = [
-  {
-    name: "Джерельце",
-    type: "Малюки",
-    age: "1–3 роки",
-    text: "Мʼяка адаптація, сенсорні ігри, багато руху та обіймів.",
-    activities: ["Сенсорика", "Пальчикові ігри", "Музичні хвилинки"],
-    color: "bg-sun",
-  },
-  {
-    name: "Струмочок",
-    type: "Малюки",
-    age: "1–3 роки",
-    text: "Мʼяка адаптація, багато обіймів і руху.",
-    activities: ["Рухливі ігри", "Малювання", "Ліплення"],
-    color: "bg-mint",
-  },
-  {
-    name: "Ромашка",
-    type: "Малюки",
-    age: "1–3 роки",
-    text: "Мʼяка адаптація, багато обіймів і руху.",
-    activities: ["Казки", "Природа", "Хореографія"],
-    color: "bg-sun",
-  },
-  {
-    name: "Сонечко",
-    type: "Дорослі малюки",
-    age: "3–6 років",
-    text: "Розвиток мовлення й перші творчі проєкти.",
-    activities: ["Мовлення", "Творчість", "Музика"],
-    color: "bg-mint",
-  },
-  {
-    name: "Калинка",
-    type: "Дорослі малюки",
-    age: "4–6 років",
-    text: "Досліди, спільні ігри, пізнання світу.",
-    activities: ["Досліди", "Лічба", "Логіка"],
-    color: "bg-mint",
-  },
-];
-
 function Groups() {
   return (
     <main className="mx-auto max-w-6xl px-4 sm:px-6">
       <section className="py-10">
         <h1 className="font-display text-4xl text-primary-deep sm:text-5xl">Наші групи</h1>
         <p className="mt-4 max-w-prose text-lg text-muted-foreground">
-          У садочку працюють групи для дітей від 1 до 6 років. Дитину зараховуємо у групу за віком
-          і наявними місцями.
+          У садочку працюють групи для дітей від 1 до 6 років. Натисніть на групу, щоб побачити
+          її фото та заняття.
         </p>
       </section>
 
       <section className="grid gap-4 pb-14 sm:grid-cols-2">
         {groups.map((g, index) => (
-          <article key={g.name} className={`p-6 toy-card toy-hover ${index === groups.length - 1 ? "sm:col-span-2 sm:mx-auto sm:w-[calc(50%-0.5rem)]" : ""}`}>
+          <Link
+            key={g.slug}
+            to="/groups/$slug"
+            params={{ slug: g.slug }}
+            className={`p-6 toy-card toy-hover ${index === groups.length - 1 ? "sm:col-span-2 sm:mx-auto sm:w-[calc(50%-0.5rem)]" : ""}`}
+          >
             <div className="flex flex-wrap items-center gap-3">
               <span
                 className={`rounded-md border-2 border-primary-deep px-3 py-1 font-display text-xs font-bold text-primary-deep ${g.color}`}
@@ -92,30 +51,8 @@ function Groups() {
             </div>
             <h2 className="mt-4 font-display text-2xl text-primary-deep">{g.name}</h2>
             <p className="mt-2 text-muted-foreground">{g.text}</p>
-            <ul className="mt-4 flex flex-wrap gap-2">
-              {g.activities.map((a) => (
-                <li
-                  key={a}
-                  className="rounded-md border-2 border-primary-deep bg-background px-3 py-1 text-xs font-bold"
-                >
-                  {a}
-                </li>
-              ))}
-            </ul>
-            <div className="mt-5 flex gap-3 overflow-x-auto pb-2">
-              {[gallery1, gallery2, gallery3, gallery4].map((image, photoIndex) => (
-                <img
-                  key={`${g.name}-${photoIndex}`}
-                  src={image}
-                  alt={`Життя групи «${g.name}», фото ${photoIndex + 1}`}
-                  width={816}
-                  height={816}
-                  loading="lazy"
-                  className="aspect-square w-36 shrink-0 rounded-md border border-primary-deep object-cover"
-                />
-              ))}
-            </div>
-          </article>
+            <p className="mt-4 font-display text-sm font-bold text-accent">Дивитись групу →</p>
+          </Link>
         ))}
       </section>
 

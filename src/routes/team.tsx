@@ -5,6 +5,9 @@ import gallery1 from "@/assets/gallery-1.jpg";
 import gallery2 from "@/assets/gallery-2.jpg";
 import gallery3 from "@/assets/gallery-3.jpg";
 import gallery4 from "@/assets/gallery-4.jpg";
+import heroImg from "@/assets/hero-kindergarten.jpg";
+import { ZoomImage } from "@/components/zoom-image";
+import { groups } from "@/lib/groups";
 
 export const Route = createFileRoute("/team")({
   head: () => ({
@@ -20,17 +23,30 @@ export const Route = createFileRoute("/team")({
   component: Team,
 });
 
-const team = [
-  { role: "Директор", name: "Ім’я та прізвище", image: aboutImg },
-  { role: "Вихователь групи «Джерельце»", name: "Ім’я та прізвище", image: gallery1 },
-  { role: "Вихователь групи «Струмочок»", name: "Ім’я та прізвище", image: gallery2 },
-  { role: "Вихователь групи «Ромашка»", name: "Ім’я та прізвище", image: gallery3 },
-  { role: "Вихователь групи «Сонечко»", name: "Ім’я та прізвище", image: gallery4 },
-  { role: "Вихователь групи «Калинка»", name: "Ім’я та прізвище", image: aboutImg },
-  { role: "Музичний керівник", name: "Ім’я та прізвище", image: gallery2 },
-  { role: "Логопед", name: "Ім’я та прізвище", image: gallery1 },
-  { role: "Практичний психолог", name: "Ім’я та прізвище", image: gallery3 },
-  { role: "Медична сестра", name: "Ім’я та прізвище", image: gallery4 },
+const staffImages = [aboutImg, gallery1, gallery2, gallery3, gallery4, heroImg];
+
+type Staff = { role: string; image: string };
+
+const staff: Staff[] = [
+  { role: "Директор", image: aboutImg },
+  { role: "Вихователь-методист", image: gallery1 },
+  ...groups.flatMap((group, i) => [
+    { role: `Вихователь 1 · група «${group.name}»`, image: staffImages[i % staffImages.length]! },
+    { role: `Вихователь 2 · група «${group.name}»`, image: staffImages[(i + 1) % staffImages.length]! },
+    { role: `Помічник вихователя · група «${group.name}»`, image: staffImages[(i + 2) % staffImages.length]! },
+  ]),
+  { role: "Інструктор з фізичного виховання", image: gallery3 },
+  { role: "Музичний керівник", image: gallery2 },
+  { role: "Логопед", image: gallery1 },
+  { role: "Практичний психолог", image: gallery3 },
+  { role: "Медична сестра", image: gallery4 },
+  { role: "Завідувач господарством", image: aboutImg },
+  { role: "Комірник", image: heroImg },
+  { role: "Кухар", image: gallery4 },
+  { role: "Кухар", image: gallery4 },
+  { role: "Праля", image: aboutImg },
+  { role: "Робітник з обслуговування", image: heroImg },
+  { role: "Головна бабуся нашого садочка", image: gallery2 },
 ];
 
 function Team() {
@@ -43,17 +59,17 @@ function Team() {
         </p>
       </section>
       <section className="grid gap-5 pb-14 sm:grid-cols-2 lg:grid-cols-3">
-        {team.map((person, index) => (
+        {staff.map((person, index) => (
           <article key={`${person.role}-${index}`} className="overflow-hidden toy-card toy-hover">
             <p className="p-4 font-display text-sm font-bold text-accent">{person.role}</p>
-            <img
+            <ZoomImage
               src={person.image}
-              alt={`Фото: ${person.name}, ${person.role}`}
+              alt={`Фото: ${person.role}`}
               width={816}
               height={816}
               className="aspect-square w-full border-y border-primary-deep object-cover"
             />
-            <h2 className="p-4 font-display text-xl text-primary-deep">{person.name}</h2>
+            <h2 className="p-4 font-display text-xl text-primary-deep">Ім’я та прізвище</h2>
           </article>
         ))}
       </section>
