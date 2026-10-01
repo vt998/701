@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { ZoomImage } from "@/components/zoom-image";
+import { groups } from "@/lib/groups";
 
 import aboutImg from "@/assets/about-classroom.jpg";
 import gallery1 from "@/assets/gallery-1.jpg";
@@ -120,15 +121,16 @@ function Parents() {
       <section className="pb-14">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <h2 className="font-display text-3xl text-primary-deep">Харчування</h2>
-          <div className="flex max-w-full gap-2 overflow-x-auto pb-2">
+          <div className="grid w-full grid-cols-5 gap-2 pb-2 sm:w-auto sm:min-w-[520px]">
             {weekdays.map((day) => (
               <Button
-                key={day}
+                key=<span className="sm:hidden">{day.slice(0, 2)}</span>
+                <span className="hidden sm:inline">{day}</span>
                 type="button"
                 variant={selectedMealDay === day ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSelectedMealDay(day)}
-                className="shrink-0 border-primary-deep font-display font-bold"
+                className="w-full border-primary-deep px-1 font-display font-bold"
               >
                 {day}
               </Button>
@@ -194,21 +196,25 @@ function Parents() {
           </div>
         </div>
         <div className="flex gap-4 overflow-x-auto pb-4">
-          {routinePhotos.map((step) => (
+          {routinePhotos.map((step, i) => {
+            const photos = groups.find((g) => g.name === selectedRoutineGroup)?.photos ?? [];
+            const photo = photos[i % Math.max(photos.length, 1)];
+            return (
             <article
               key={`${selectedRoutineGroup}-${step.title}`}
               className="min-w-[230px] p-3 toy-card toy-hover sm:min-w-[280px]"
             >
               <ZoomImage
-                src={step.img}
-                alt={step.alt}
+                src={photo?.src ?? step.img}
+                alt={photo?.alt ?? step.alt}
                 width={816}
                 height={816}
                 className="aspect-square w-full rounded-md object-cover"
               />
               <h3 className="mt-3 font-display text-lg text-primary-deep">{step.title}</h3>
             </article>
-          ))}
+            );
+          })}
         </div>
       </section>
 
