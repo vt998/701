@@ -131,7 +131,8 @@ function Parents() {
                 onClick={() => setSelectedMealDay(day)}
                 className="w-full border-primary-deep px-1 font-display font-bold"
               >
-                {day}
+                <span className="sm:hidden">{day.slice(0, 2)}</span>
+                <span className="hidden sm:inline">{day}</span>
               </Button>
             ))}
           </div>
