@@ -124,8 +124,7 @@ function Parents() {
           <div className="grid w-full grid-cols-5 gap-2 pb-2 sm:w-auto sm:min-w-[520px]">
             {weekdays.map((day) => (
               <Button
-                key=<span className="sm:hidden">{day.slice(0, 2)}</span>
-                <span className="hidden sm:inline">{day}</span>
+                key={day}
                 type="button"
                 variant={selectedMealDay === day ? "default" : "outline"}
                 size="sm"
