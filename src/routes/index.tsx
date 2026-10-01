@@ -47,25 +47,39 @@ const news = [
   { date: "24/7", tag: "Безпека", title: "Наше укриття", text: "Для учасників освітнього процесу укриття працює цілодобово та розраховане на 300 осіб." },
 ];
 
-const steps = [
+const steps: { n: string; title: string; text: string; items?: string[] }[] = [
   { n: "1", title: "Онлайн запис", text: "Заповніть заявку в системі СЕ ЗДО." },
   { n: "2", title: "Прийняття запрошення", text: "Підтвердьте запрошення до закладу." },
   {
     n: "3",
     title: "Надання документів",
-    text: "Заява про зарахування, копія та оригінал свідоцтва про народження дитини та медичні документи (медична довідка про стан здоров’я дитини та карта профілактичних щеплень), згода на обробку персональних даних.",
+    text: "",
+    items: [
+      "Заява про зарахування",
+      "Копія і оригінал свідоцтва про народження дитини",
+      "Копія і оригінал медичної довідки про стан здоров’я дитини та карта профілактичних щеплень",
+      "Згода на обробку персональних даних",
+    ],
   },
   { n: "4", title: "Знайомство", text: "Зустріч із вихователем і екскурсія групою." },
 ];
 
 const groupNames = groups.map((g) => g.name);
 
+/** Перше фото кожної групи; стартова позиція зсувається щотижня автоматично. */
+function weeklyFirstPhotos() {
+  const firsts = groups.map((g) => g.photos[0] ?? galleryImages[0]!);
+  const week = Math.floor(Date.now() / (7 * 24 * 3600 * 1000));
+  const off = week % firsts.length;
+  return firsts.map((_, i) => firsts[(i + off) % firsts.length]!);
+}
+
 function Home() {
   const galleryGroups = ["Усі", ...groupNames];
   const [selectedGalleryGroup, setSelectedGalleryGroup] = useState("Усі");
   const visibleGallery =
     selectedGalleryGroup === "Усі"
-      ? galleryImages
+      ? weeklyFirstPhotos()
       : (groups.find((g) => g.name === selectedGalleryGroup)?.photos ?? galleryImages);
 
   return (
@@ -132,8 +146,8 @@ function Home() {
             Місце, куди хочеться повертатися
           </h2>
           <p className="mt-4 max-w-prose text-muted-foreground">
-            Світлі просторі групи, безпечний майданчик і вихователі турбуються про дітей кожної
-            секунди. Ми поєднуємо гру з навчанням і бережемо дитинство.
+            Світлі просторі групи, безпечний майданчик і вихователі, що турбуються про дітей кожної
+            секунди.
           </p>
           <ul className="mt-6 space-y-3">
             {[
@@ -163,12 +177,7 @@ function Home() {
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {groups.map((g) => (
-            <Link
-              key={g.slug}
-              to="/groups/$slug"
-              params={{ slug: g.slug }}
-              className="p-5 toy-card toy-hover"
-            >
+            <div key={g.slug} className="p-5 toy-card">
               <span
                 className={`inline-block rounded-md border-2 border-primary-deep px-3 py-1 font-display text-xs font-bold text-primary-deep ${g.color}`}
               >
@@ -177,7 +186,7 @@ function Home() {
               <p className="mt-3 font-display text-xs font-bold text-accent">{g.type}</p>
               <h3 className="mt-4 font-display text-xl text-primary-deep">{g.name}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{g.text}</p>
-            </Link>
+            </div>
           ))}
         </div>
       </section>
@@ -254,7 +263,14 @@ function Home() {
                   {s.n}
                 </span>
                 <h3 className="mt-4 font-display text-lg text-primary-deep">{s.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{s.text}</p>
+                {s.text && <p className="mt-1 text-sm text-muted-foreground">{s.text}</p>}
+                {s.items && (
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+                    {s.items.map((it) => (
+                      <li key={it}>{it}</li>
+                    ))}
+                  </ul>
+                )}
               </div>
             ))}
           </div>

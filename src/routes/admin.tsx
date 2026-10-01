@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 
-const ADMIN_EMAIL = "zdo701@ukr.net";
+const ADMIN_EMAIL = "dnz701@ukr.net";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({

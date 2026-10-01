@@ -62,9 +62,14 @@ function Groups() {
           <p className="mt-2 text-muted-foreground">
             Зателефонуйте або завітайте до адміністрації — підкажемо, де є вільні місця.
           </p>
-          <Link to="/contacts" className="mt-6 bg-primary text-primary-foreground toy-btn">
+          <a
+            href="https://portal.kyiv.digital/service/Zapys-do-sadochka"
+            target="_blank"
+            rel="noreferrer"
+            className="mt-6 bg-primary text-primary-foreground toy-btn"
+          >
             Записати дитину
-          </Link>
+          </a>
         </div>
       </section>
     </main>
