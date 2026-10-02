@@ -242,7 +242,7 @@ function Home() {
                 alt={img.alt}
                 width={816}
                 height={816}
-                className="aspect-square w-full rounded-2xl object-cover"
+                className="aspect-video w-full rounded-2xl object-cover"
               />
             </div>
           ))}
