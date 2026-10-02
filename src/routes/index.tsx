@@ -75,13 +75,13 @@ function weeklyFirstPhotos() {
 }
 
 function Home() {
-  const galleryGroups = ["Усі", ...groupNames];
-  const [selectedGalleryGroup, setSelectedGalleryGroup] = useState("Усі");
-  const visibleGallery =
-    selectedGalleryGroup === "Усі"
-      ? weeklyFirstPhotos()
-      : (groups.find((g) => g.name === selectedGalleryGroup)?.photos ?? galleryImages);
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<GalleryCategory>("Заняття");
 
+  const visibleGallery =
+    selectedGroup
+      ? (galleryData.find((g) => g.name === selectedGroup)?.photos[selectedCategory] ?? [])
+      : weeklyFirstPhotos();
   return (
     <main className="mx-auto max-w-6xl px-4 sm:px-6">
       {/* Герой */}
@@ -217,25 +217,51 @@ function Home() {
         <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <h2 className="font-display text-3xl text-primary-deep sm:text-4xl">Наше життя</h2>
           <div className="flex max-w-full gap-2 overflow-x-auto pb-2">
-            {galleryGroups.map((group) => (
-              <Button
-                key={group}
-                type="button"
-                variant={selectedGalleryGroup === group ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedGalleryGroup(group)}
-                className="shrink-0 border-primary-deep font-display font-bold"
-              >
-                {group}
-              </Button>
-            ))}
+            {!selectedGroup ? (
+              galleryData.map((g) => (
+                <Button
+                  key={g.name}
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedGroup(g.name)}
+                  className="shrink-0 border-primary-deep font-display font-bold"
+                >
+                  {g.name}
+                </Button>
+              ))
+            ) : (
+              <>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedGroup(null)}
+                  className="shrink-0 font-display font-bold text-accent"
+                >
+                  ← Назад
+                </Button>
+                {(["Заняття", "Дозвілля", "Свята"] as GalleryCategory[]).map((cat) => (
+                  <Button
+                    key={cat}
+                    type="button"
+                    variant={selectedCategory === cat ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedCategory(cat)}
+                    className="shrink-0 border-primary-deep font-display font-bold"
+                  >
+                    {cat}
+                  </Button>
+                ))}
+              </>
+            )}
           </div>
         </div>
         <div className="flex gap-4 overflow-x-auto pb-4">
           {visibleGallery.map((img, index) => (
             <div
-              key={`${selectedGalleryGroup}-${img.alt}-${index}`}
-              className="min-w-[220px] p-2 toy-card toy-hover sm:min-w-[260px]"
+              key={`${selectedGroup}-${selectedCategory}-${img.alt}-${index}`}
+              className="min-w-[280px] p-2 toy-card toy-hover sm:min-w-[360px]"
             >
               <ZoomImage
                 src={img.src}
