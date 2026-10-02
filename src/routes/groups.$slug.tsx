@@ -71,7 +71,7 @@ function GroupPage() {
                 alt={`${photo.alt}, група «${group.name}»`}
                 width={816}
                 height={816}
-                className="aspect-square w-full rounded-2xl object-cover"
+                className="aspect-video w-full rounded-2xl object-cover"
               />
             </div>
           ))}

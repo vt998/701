@@ -107,7 +107,7 @@ function Parents() {
                 alt={item.alt}
                 width={816}
                 height={816}
-                className="aspect-square w-full rounded-md object-cover"
+                className="aspect-video w-full rounded-md object-cover"
               />
               <div className="p-3">
                 <h3 className="font-display text-lg text-primary-deep">{item.title}</h3>
@@ -147,7 +147,7 @@ function Parents() {
                   alt={`${meal.alt}, ${selectedMealDay}`}
                   width={816}
                   height={816}
-                  className="aspect-square w-full rounded-md border border-primary-deep object-cover"
+                  className="aspect-video w-full rounded-md border border-primary-deep object-cover"
                 />
                 <h3 className="mt-3 font-display text-lg text-primary-deep">{meal.meal}</h3>
               </article>
@@ -166,7 +166,7 @@ function Parents() {
                 alt={item.alt}
                 width={816}
                 height={816}
-                className="aspect-square w-full rounded-md object-cover"
+                className="aspect-video w-full rounded-md object-cover"
               />
               <div>
                 <h3 className="font-display text-xl text-primary-deep">{item.title}</h3>
@@ -209,7 +209,7 @@ function Parents() {
                 alt={photo?.alt ?? step.alt}
                 width={816}
                 height={816}
-                className="aspect-square w-full rounded-md object-cover"
+                className="aspect-video w-full rounded-md object-cover"
               />
               <h3 className="mt-3 font-display text-lg text-primary-deep">{step.title}</h3>
             </article>

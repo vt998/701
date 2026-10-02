@@ -67,7 +67,7 @@ function Team() {
               alt={`Фото: ${person.role}`}
               width={816}
               height={816}
-              className="aspect-square w-full border-y border-primary-deep object-cover"
+              className="aspect-video w-full border-y border-primary-deep object-cover"
             />
             <h2 className="p-4 font-display text-xl text-primary-deep">Ім’я та прізвище</h2>
           </article>
