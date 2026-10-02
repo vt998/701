@@ -8,7 +8,7 @@ export function SiteFooter() {
   return (
     <footer className="mt-8 border-t border-primary-deep bg-primary-deep text-primary-foreground">
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 sm:px-6 md:flex-row md:flex-wrap md:items-center md:justify-between md:gap-x-8">
-        <p className={item}>ЗДО № 701 · м. Київ, Марганецька вул., 26A, 02092</p>
+        <p className={item}>ЗДО № 701 · м. Київ, Марганецька вул., 26A, 02092 · +38 068 319 68 12</p>
         <p className={item}>Зроблено з турботою про кожну дитину</p>
         <Link to="/privacy" className={`${item} hover:underline`}>
           Політика конфіденційності

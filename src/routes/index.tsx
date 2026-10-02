@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 import { ZoomImage } from "@/components/zoom-image";
-import { galleryImages, groups } from "@/lib/groups";
+import { galleryImages, groups, galleryData, type GalleryCategory } from "@/lib/groups";
 
 import heroImg from "@/assets/hero-kindergarten.jpg";
 import aboutImg from "@/assets/about-classroom.jpg";
