@@ -23,7 +23,7 @@ export const Route = createFileRoute("/contacts")({
 const contacts = [
   { label: "Адреса", value: "м. Київ, Марганецька вул., 26A, 02092" },
   { label: "Транспорт", value: "Кінцева: 33К, 555, 211" },
-  { label: "Телефон", value: "+38 068 319 68 12, Kyivstar" },
+  { label: "Телефон", value: "+38 068 319 68 12 (kyivstar)" },
   { label: "Електронна пошта", value: "dnz701@ukr.net" },
   { label: "Графік роботи", value: "Пн–Пт, 7:00–19:00" },
   { label: "Прийом батьків", value: "Пн–Пт, 8:30–16:00" },

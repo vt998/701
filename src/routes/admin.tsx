@@ -6,7 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 
-const ADMIN_EMAIL = "dnz701@ukr.net";
+import { ADMIN_EMAIL } from '@/lib/photo-rules';
+import { useAdminSession } from '@/components/admin-session';
+import { AdminDashboard } from '@/components/admin-dashboard';
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -23,6 +25,7 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminLogin() {
+  const { admin, loading, error: accessError, refresh } = useAdminSession();
   const [email, setEmail] = useState(ADMIN_EMAIL);
   const [code, setCode] = useState("");
   const [codeSent, setCodeSent] = useState(false);
@@ -40,7 +43,7 @@ function AdminLogin() {
     setMessage("");
     const { error } = await supabase.auth.signInWithOtp({
       email: ADMIN_EMAIL,
-      options: { shouldCreateUser: true },
+      options: { shouldCreateUser: true, emailRedirectTo: `${window.location.origin}/admin` },
     });
     setBusy(false);
 
@@ -50,7 +53,7 @@ function AdminLogin() {
     }
 
     setCodeSent(true);
-    setMessage("Код входу надіслано на електронну пошту адміністратора.");
+    setMessage("Лист надіслано. Натисніть посилання в листі або введіть код, якщо він указаний.");
   }
 
   async function verifyCode(event: FormEvent<HTMLFormElement>) {
@@ -69,17 +72,12 @@ function AdminLogin() {
       return;
     }
 
-    const { error: roleError } = await supabase.from("user_roles").upsert(
-      { user_id: data.user.id, role: "admin" },
-      { onConflict: "user_id,role", ignoreDuplicates: true },
-    );
+    await refresh();
     setBusy(false);
-    setMessage(
-      roleError
-        ? "Вхід виконано, але кабінет адміністратора ще налаштовується."
-        : "Вхід виконано. Кабінет керування фотографіями ще налаштовується.",
-    );
   }
+
+  if (loading) return <main className="mx-auto max-w-6xl px-4 py-12" role="status">Перевіряємо вхід…</main>;
+  if (admin) return <AdminDashboard />;
 
   return (
     <main className="mx-auto w-full max-w-xl px-4 py-12 sm:px-6">
@@ -87,7 +85,7 @@ function AdminLogin() {
         <p className="font-display text-sm font-bold text-accent">Захищена сторінка</p>
         <h1 className="mt-3 font-display text-3xl text-primary-deep">Вхід адміністратора</h1>
         <p className="mt-3 text-muted-foreground">
-          Отримайте одноразовий код на електронну пошту закладу.
+          Вхід через електронну пошту закладу.
         </p>
 
         {!codeSent ? (
@@ -104,7 +102,7 @@ function AdminLogin() {
               />
             </div>
             <Button type="submit" disabled={busy} className="w-full font-display font-bold">
-              {busy ? "Надсилаємо…" : "Отримати код"}
+              {busy ? "Надсилаємо…" : "Надіслати лист для входу"}
             </Button>
           </form>
         ) : (
@@ -123,9 +121,11 @@ function AdminLogin() {
             <Button type="submit" disabled={busy || code.trim().length < 6} className="w-full font-display font-bold">
               {busy ? "Перевіряємо…" : "Увійти"}
             </Button>
+            <Button type="button" variant="outline" className="w-full" disabled={busy} onClick={() => { setCodeSent(false); setMessage(''); }}>Надіслати лист повторно</Button>
           </form>
         )}
 
+        {accessError && <p className="mt-5 text-destructive" role="alert">{accessError}</p>}
         {message && <p className="mt-5 text-sm text-muted-foreground" role="status">{message}</p>}
       </section>
     </main>

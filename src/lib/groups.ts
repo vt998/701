@@ -24,7 +24,7 @@ export const galleryImages: GroupPhoto[] = [
 ];
 
 function rotate(list: GroupPhoto[], offset: number): GroupPhoto[] {
-  return list.map((_, i) => list[(i + offset) % list.length]!);
+  return [...list.slice(offset % list.length), ...list.slice(0, offset % list.length)];
 }
 
 export const groups: Group[] = [
@@ -80,52 +80,3 @@ export const groups: Group[] = [
   },
 ];
 
-export type GalleryCategory = "Заняття" | "Дозвілля" | "Свята";
-
-export type GalleryGroup = {
-  name: string;
-  photos: Record<GalleryCategory, GroupPhoto[]>;
-};
-
-export const galleryData: GalleryGroup[] = [
-  {
-    name: "Ранній розвиток",
-    photos: {
-      "Заняття": [galleryImages[0]!],
-      "Дозвілля": [galleryImages[1]!],
-      "Свята": [galleryImages[2]!],
-    },
-  },
-  {
-    name: "Дошкільна підготовка",
-    photos: {
-      "Заняття": [galleryImages[3]!],
-      "Дозвілля": [galleryImages[0]!],
-      "Свята": [galleryImages[1]!],
-    },
-  },
-  {
-    name: "Творчість",
-    photos: {
-      "Заняття": [galleryImages[2]!],
-      "Дозвілля": [galleryImages[3]!],
-      "Свята": [galleryImages[0]!],
-    },
-  },
-  {
-    name: "Англійська мова",
-    photos: {
-      "Заняття": [galleryImages[1]!],
-      "Дозвілля": [galleryImages[2]!],
-      "Свята": [galleryImages[3]!],
-    },
-  },
-  {
-    name: "Спорт",
-    photos: {
-      "Заняття": [galleryImages[0]!],
-      "Дозвілля": [galleryImages[1]!],
-      "Свята": [galleryImages[2]!],
-    },
-  },
-];
