@@ -8,3 +8,9 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+## Application rules
+- Use one shared group gallery for the home page and groups page; category and group selectors address the same persisted photos.
+- Keep admin identity in one root session provider; verify users through Auth and permissions through the database role function, with RLS enforcing every photo operation.
+- Read private-bucket photos through expiring signed URLs and invalidate shared photo queries after mutations so public displays reflect saved changes.
+- Record anonymous route view counts without personal identifiers; exclude the admin page from counts.

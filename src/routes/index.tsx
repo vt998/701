@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { GroupGallery } from "@/components/group-gallery";
 
-import { Button } from "@/components/ui/button";
 
-import { ZoomImage } from "@/components/zoom-image";
-import { galleryImages, groups, galleryData, type GalleryCategory } from "@/lib/groups";
+
+
+import { groups } from "@/lib/groups";
 
 import heroImg from "@/assets/hero-kindergarten.jpg";
 import aboutImg from "@/assets/about-classroom.jpg";
@@ -39,7 +39,7 @@ const quickInfo = [
     title: "Адреса",
     lines: ["м. Київ, Марганецька вул., 26A, 02092", "Кінцева: 33К, 555, 211"],
   },
-  { icon: "☎️", title: "Телефон", lines: ["+38 068 319 68 12", "Kyivstar"] },
+  { icon: "☎️", title: "Телефон", lines: ["+38 068 319 68 12 (kyivstar)"] },
 ];
 
 const news = [
@@ -64,24 +64,7 @@ const steps: { n: string; title: string; text: string; items?: string[] }[] = [
   { n: "4", title: "Знайомство", text: "Зустріч із вихователем і екскурсія групою." },
 ];
 
-const groupNames = groups.map((g) => g.name);
-
-/** Перше фото кожної групи; стартова позиція зсувається щотижня автоматично. */
-function weeklyFirstPhotos() {
-  const firsts = groups.map((g) => g.photos[0] ?? galleryImages[0]!);
-  const week = Math.floor(Date.now() / (7 * 24 * 3600 * 1000));
-  const off = week % firsts.length;
-  return firsts.map((_, i) => firsts[(i + off) % firsts.length]!);
-}
-
 function Home() {
-  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<GalleryCategory>("Заняття");
-
-  const visibleGallery =
-    selectedGroup
-      ? (galleryData.find((g) => g.name === selectedGroup)?.photos[selectedCategory] ?? [])
-      : weeklyFirstPhotos();
   return (
     <main className="mx-auto max-w-6xl px-4 sm:px-6">
       {/* Герой */}
@@ -212,67 +195,9 @@ function Home() {
         </div>
       </section>
 
-      {/* Галерея */}
       <section className="pb-14">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-          <h2 className="font-display text-3xl text-primary-deep sm:text-4xl">Наше життя</h2>
-          <div className="flex max-w-full gap-2 overflow-x-auto pb-2">
-            {!selectedGroup ? (
-              galleryData.map((g) => (
-                <Button
-                  key={g.name}
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSelectedGroup(g.name)}
-                  className="shrink-0 border-primary-deep font-display font-bold"
-                >
-                  {g.name}
-                </Button>
-              ))
-            ) : (
-              <>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSelectedGroup(null)}
-                  className="shrink-0 font-display font-bold text-accent"
-                >
-                  ← Назад
-                </Button>
-                {(["Заняття", "Дозвілля", "Свята"] as GalleryCategory[]).map((cat) => (
-                  <Button
-                    key={cat}
-                    type="button"
-                    variant={selectedCategory === cat ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setSelectedCategory(cat)}
-                    className="shrink-0 border-primary-deep font-display font-bold"
-                  >
-                    {cat}
-                  </Button>
-                ))}
-              </>
-            )}
-          </div>
-        </div>
-        <div className="flex gap-4 overflow-x-auto pb-4">
-          {visibleGallery.map((img, index) => (
-            <div
-              key={`${selectedGroup}-${selectedCategory}-${img.alt}-${index}`}
-              className="min-w-[280px] p-2 toy-card toy-hover sm:min-w-[360px]"
-            >
-              <ZoomImage
-                src={img.src}
-                alt={img.alt}
-                width={816}
-                height={816}
-                className="aspect-video w-full rounded-2xl object-cover"
-              />
-            </div>
-          ))}
-        </div>
+        <h2 className="mb-6 font-display text-3xl text-primary-deep sm:text-4xl">Наше життя</h2>
+        <GroupGallery />
       </section>
 
       {/* Як записати */}

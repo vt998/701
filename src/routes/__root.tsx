@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -13,6 +14,8 @@ import type { ErrorComponentProps } from "@tanstack/react-router";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader } from "../components/site-header";
+import { AdminSessionProvider } from "../components/admin-session";
+import { supabase } from "@/integrations/supabase/client";
 import { SiteFooter } from "../components/site-footer";
 
 
@@ -128,9 +131,15 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: state => state.location.pathname });
+  useEffect(() => {
+    if (pathname.startsWith('/admin')) return;
+    void supabase.from('page_views').insert({ path: pathname.slice(0, 200) }).then(() => {});
+  }, [pathname]);
 
   return (
     <QueryClientProvider client={queryClient}>
+      <AdminSessionProvider>
       <div className="flex min-h-screen flex-col">
         <SiteHeader />
         <div className="flex-1">
@@ -139,6 +148,7 @@ function RootComponent() {
         </div>
         <SiteFooter />
       </div>
+      </AdminSessionProvider>
     </QueryClientProvider>
   );
 
