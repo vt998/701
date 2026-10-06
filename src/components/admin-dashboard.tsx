@@ -26,7 +26,7 @@ export function AdminDashboard() {
   async function signOut() { await queryClient.cancelQueries(); queryClient.clear(); await supabase.auth.signOut(); await navigate({ to: '/admin', replace: true }); }
   return <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
     <div className="mb-8 flex flex-wrap items-center justify-between gap-4"><h1 className="font-display text-3xl text-primary-deep">Кабінет адміністратора</h1><Button variant="outline" onClick={() => void signOut()}><LogOut />Вийти</Button></div>
-    <div className="mb-8 flex flex-wrap gap-2">{[['groups','Галереї груп'],['team','Колектив'],['adaptation','Адаптація'],['meals','Харчування'],['routine','Режим дня']].map(([value,label]) => <Button key={value} variant={section === value ? 'default' : 'outline'} onClick={() => setSection(value)}>{label}</Button>)}</div>
+    <div className="mb-8 flex flex-wrap gap-2">{([['groups','Галереї груп'],['team','Колектив'],['adaptation','Адаптація'],['meals','Харчування'],['routine','Режим дня']] as const).map(([value,label]) => <Button key={value} variant={section === value ? 'default' : 'outline'} onClick={() => setSection(value)}>{label}</Button>)}</div>
     {section === 'groups' ? <GroupGallery /> : <PhotoManager section={section} photos={photos.filter(p => p.section === section)} />}
     <section className="mt-10 border-t border-border py-8"><h2 className="font-display text-2xl text-primary-deep">Статистика відвідувань</h2>
       <div className="my-5 grid grid-cols-3 gap-4">{[['Усі перегляди',stats?.total],['За 7 днів',stats?.week],['За 30 днів',stats?.month]].map(([label,value]) => <div key={label}><p className="text-sm text-muted-foreground">{label}</p><p className="font-display text-3xl text-primary-deep">{value ?? '—'}</p></div>)}</div>
