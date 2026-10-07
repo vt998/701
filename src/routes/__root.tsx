@@ -17,6 +17,7 @@ import { SiteHeader } from "../components/site-header";
 import { AdminSessionProvider } from "../components/admin-session";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteFooter } from "../components/site-footer";
+import { AdminBar } from "../components/admin-bar";
 
 
 function NotFoundComponent() {
@@ -141,6 +142,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AdminSessionProvider>
       <div className="flex min-h-screen flex-col">
+        <AdminBar />
         <SiteHeader />
         <div className="flex-1">
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
