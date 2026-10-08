@@ -21,6 +21,7 @@ function Accessibility() {
       <p className="mt-6 max-w-prose text-lg text-muted-foreground">
         Ми прагнемо, щоб інформація про ЗДО № 701 була зрозумілою та доступною для всіх родин.
       </p>
+      <p className="mt-6 text-sm text-muted-foreground">Значки: <a className="underline" href="https://www.flaticon.com/" target="_blank" rel="noreferrer">Magnific та Freepik / Flaticon</a>.</p>
     </main>
   );
 }

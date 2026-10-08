@@ -8,7 +8,7 @@ import { useAdminSession } from './admin-session';
 import type { SitePhoto } from '@/lib/site-photos';
 import { photoStoragePath, isAllowedImage, moveItem } from '@/lib/photo-rules';
 
-export function PhotoManager({ section, groupSlug = null, photos }: { section: string; groupSlug?: string | null; photos: SitePhoto[] }) {
+export function PhotoManager({ section, groupSlug = null, folderId = null, photos }: { section: string; groupSlug?: string | null; folderId?: string | null; photos: SitePhoto[] }) {
   const { admin } = useAdminSession();
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
@@ -31,7 +31,7 @@ export function PhotoManager({ section, groupSlug = null, photos }: { section: s
         const path = photoStoragePath(section, groupSlug, file.type, crypto.randomUUID());
         const { error: uploadError } = await supabase.storage.from('site-photos').upload(path, file, { contentType: file.type });
         if (uploadError) throw uploadError;
-        const { error: rowError } = await supabase.from('site_photos').insert({ section, group_slug: groupSlug, storage_path: path, alt_text: file.name.replace(/\.[^.]+$/, ''), sort_order: Math.max(-1, ...photos.map(p => p.sort_order)) + index + 1 });
+        const { error: rowError } = await supabase.from('site_photos').insert({ section, group_slug: groupSlug, folder_id: folderId, storage_path: path, alt_text: file.name.replace(/\.[^.]+$/, ''), sort_order: Math.max(-1, ...photos.map(p => p.sort_order)) + index + 1 });
         if (rowError) { await supabase.storage.from('site-photos').remove([path]); throw rowError; }
       }
     });

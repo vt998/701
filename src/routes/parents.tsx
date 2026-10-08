@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ZoomImage } from "@/components/zoom-image";
 import { groups } from "@/lib/groups";
+import { weekdayShortNames } from "@/lib/gallery-rules";
 
 import aboutImg from "@/assets/about-classroom.jpg";
 import gallery1 from "@/assets/gallery-1.jpg";
@@ -85,8 +86,8 @@ const routinePhotos = [
 ];
 
 function Parents() {
-  const [selectedMealDay, setSelectedMealDay] = useState(weekdays[0]!);
-  const [selectedRoutineGroup, setSelectedRoutineGroup] = useState(groupNames[0]!);
+  const [selectedMealDay, setSelectedMealDay] = useState(weekdays[0] ?? 'Понеділок');
+  const [selectedRoutineGroup, setSelectedRoutineGroup] = useState(groupNames[0] ?? 'Джерельце');
 
   return (
     <main className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -122,7 +123,7 @@ function Parents() {
         <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <h2 className="font-display text-3xl text-primary-deep">Харчування</h2>
           <div className="grid w-full grid-cols-5 gap-2 pb-2 sm:w-auto sm:min-w-[520px]">
-            {weekdays.map((day) => (
+            {weekdays.map((day, index) => (
               <Button
                 key={day}
                 type="button"
@@ -131,7 +132,7 @@ function Parents() {
                 onClick={() => setSelectedMealDay(day)}
                 className="w-full border-primary-deep px-1 font-display font-bold"
               >
-                <span className="sm:hidden">{day.slice(0, 2)}</span>
+                <span className="sm:hidden">{weekdayShortNames[index]}</span>
                 <span className="hidden sm:inline">{day}</span>
               </Button>
             ))}

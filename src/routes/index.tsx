@@ -1,5 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { GroupGallery } from "@/components/group-gallery";
+import { AnnouncementBoard } from "@/components/announcement-board";
+import houseIcon from '@/assets/house-hands.png.asset.json';
+import clockIcon from '@/assets/calendar-clock.png.asset.json';
+import phoneIcon from '@/assets/phone-call.png.asset.json';
 
 
 
@@ -33,18 +37,13 @@ export const Route = createFileRoute("/")({
 });
 
 const quickInfo = [
-  { icon: "⏰", title: "Графік роботи", lines: ["Пн–Пт, 7:00–19:00", "Сб, Нд — вихідні"] },
+  { icon: clockIcon.url, title: "Графік роботи", lines: ["Пн–Пт, 7:00–19:00", "Сб, Нд — вихідні"] },
   {
-    icon: "🏡",
+    icon: houseIcon.url,
     title: "Адреса",
     lines: ["м. Київ, Марганецька вул., 26A, 02092", "Кінцева: 33К, 555, 211"],
   },
-  { icon: "☎️", title: "Телефон", lines: ["+38 068 319 68 12 (kyivstar)"] },
-];
-
-const news = [
-  { date: "Щодня", tag: "Батькам", title: "День відкритих дверей 24/7", text: "Ми завжди відкриті до спілкування." },
-  { date: "24/7", tag: "Безпека", title: "Наше укриття", text: "Для учасників освітнього процесу укриття працює цілодобово та розраховане на 300 осіб." },
+  { icon: phoneIcon.url, title: "Телефон", lines: ["+38 068 319 68 12 (kyivstar)"] },
 ];
 
 const steps: { n: string; title: string; text: string; items?: string[] }[] = [
@@ -71,7 +70,7 @@ function Home() {
       <section className="grid items-center gap-8 py-10 lg:grid-cols-2 lg:py-14">
         <div>
           <span className="inline-flex items-center gap-2 rounded-md border-2 border-primary-deep bg-sun px-4 py-1.5 font-display text-xs font-bold text-sun-foreground">
-            🌻 Набір на поточний навчальний рік відкрито
+            Набір на поточний навчальний рік відкрито
           </span>
           <h1 className="mt-5 font-display text-4xl leading-tight text-primary-deep sm:text-5xl">
             Садочок, де дитина росте в теплі й дружбі
@@ -99,7 +98,7 @@ function Home() {
         {quickInfo.map((item) => (
           <div key={item.title} className="p-6 toy-card toy-hover">
             <span className="grid size-12 place-items-center rounded-md border-2 border-primary-deep bg-mint text-xl">
-              {item.icon}
+              <img src={item.icon} alt="" aria-hidden="true" className="size-7 object-contain" />
             </span>
             <h2 className="mt-4 font-display text-lg text-primary-deep">{item.title}</h2>
             {item.lines.map((line) => (
@@ -175,29 +174,11 @@ function Home() {
       </section>
 
       {/* Дошка оголошень */}
-      <section className="pb-14">
-        <div className="border-2 border-primary-deep bg-primary p-6 text-primary-foreground shadow-toy sm:p-8 rounded-3xl">
-          <h2 className="mb-6 font-display text-3xl">Дошка оголошень</h2>
-          <div className="grid gap-4 md:grid-cols-2">
-            {news.map((n) => (
-              <article key={n.title} className="p-5 text-foreground toy-card toy-hover">
-                <div className="flex items-center justify-between">
-                  <span className="font-display text-xs font-bold text-accent">{n.date}</span>
-                  <span className="rounded-md border-2 border-primary-deep bg-mint px-2.5 py-0.5 text-xs font-bold text-primary-deep">
-                    {n.tag}
-                  </span>
-                </div>
-                <h3 className="mt-3 font-display text-lg text-primary-deep">{n.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{n.text}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+      <AnnouncementBoard />
 
       <section className="pb-14">
         <h2 className="mb-6 font-display text-3xl text-primary-deep sm:text-4xl">Наше життя</h2>
-        <GroupGallery />
+        <GroupGallery home />
       </section>
 
       {/* Як записати */}
