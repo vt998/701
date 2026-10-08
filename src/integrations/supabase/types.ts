@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      announcements: {
+        Row: {
+          body: string
+          created_at: string
+          date_label: string
+          id: string
+          sort_order: number
+          tag: string
+          title: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          date_label?: string
+          id?: string
+          sort_order?: number
+          tag?: string
+          title?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          date_label?: string
+          id?: string
+          sort_order?: number
+          tag?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      gallery_folders: {
+        Row: {
+          created_at: string
+          group_slug: string
+          id: string
+          section: string
+          sort_order: number
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          group_slug: string
+          id?: string
+          section: string
+          sort_order?: number
+          title: string
+        }
+        Update: {
+          created_at?: string
+          group_slug?: string
+          id?: string
+          section?: string
+          sort_order?: number
+          title?: string
+        }
+        Relationships: []
+      }
       page_views: {
         Row: {
           id: number
@@ -36,6 +93,7 @@ export type Database = {
         Row: {
           alt_text: string
           created_at: string
+          folder_id: string | null
           group_slug: string | null
           id: string
           is_published: boolean
@@ -47,6 +105,7 @@ export type Database = {
         Insert: {
           alt_text?: string
           created_at?: string
+          folder_id?: string | null
           group_slug?: string | null
           id?: string
           is_published?: boolean
@@ -58,6 +117,7 @@ export type Database = {
         Update: {
           alt_text?: string
           created_at?: string
+          folder_id?: string | null
           group_slug?: string | null
           id?: string
           is_published?: boolean
@@ -66,7 +126,15 @@ export type Database = {
           storage_path?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "site_photos_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_folders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       team_members: {
         Row: {
