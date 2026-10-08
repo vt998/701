@@ -12,13 +12,12 @@ import { useEffect, type ReactNode } from "react";
 import type { ErrorComponentProps } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
+
 import { SiteHeader } from "../components/site-header";
 import { AdminSessionProvider } from "../components/admin-session";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteFooter } from "../components/site-footer";
 import { AdminBar } from "../components/admin-bar";
-
 
 function NotFoundComponent() {
   return (
@@ -37,7 +36,7 @@ function NotFoundComponent() {
             На головну
           </Link>
         </div>
-
+        
       </div>
     </div>
   );
@@ -46,18 +45,15 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
+          Сторінка не завантажилась
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+          Щось пішло не так. Спробуйте оновити сторінку або повернутися на головну
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
@@ -67,13 +63,13 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Try again
+            Спробуйте ще раз
           </button>
           <a
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            Go home
+            На головну
           </a>
         </div>
       </div>
@@ -102,10 +98,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-        {
-          rel: "stylesheet",
-          href: "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap",
-        },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap",
+      },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
@@ -132,26 +128,28 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const pathname = useRouterState({ select: state => state.location.pathname });
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
   useEffect(() => {
-    if (pathname.startsWith('/admin')) return;
-    void supabase.from('page_views').insert({ path: pathname.slice(0, 200) }).then(() => {});
+    if (pathname.startsWith("/admin")) return;
+    void supabase
+      .from("page_views")
+      .insert({ path: pathname.slice(0, 200) })
+      .then(() => {});
   }, [pathname]);
 
   return (
     <QueryClientProvider client={queryClient}>
       <AdminSessionProvider>
-      <div className="flex min-h-screen flex-col">
-        <AdminBar />
-        <SiteHeader />
-        <div className="flex-1">
-          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-          <Outlet />
+        <div className="flex min-h-screen flex-col">
+          <AdminBar />
+          <SiteHeader />
+          <div className="flex-1">
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+          </div>
+          <SiteFooter />
         </div>
-        <SiteFooter />
-      </div>
       </AdminSessionProvider>
     </QueryClientProvider>
   );
-
 }

@@ -1,22 +1,15 @@
 # ЗДО 701: Вебсайт
 
-This project was built with [Lovable](https://lovable.dev).
+Сайт закладу дошкільної освіти № 701.
 
-## Build with Lovable
+## Запуск на своєму комп'ютері
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/cb4f86e7-cdda-4eb5-b595-066a73ab3149).
+Потрібен Node.js і npm.
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+git clone https://github.com/vt998/701.git
+cd 701
+npm install
 npm run dev
-```
+
+

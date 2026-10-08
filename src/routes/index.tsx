@@ -1,12 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { GroupGallery } from "@/components/group-gallery";
 import { AnnouncementBoard } from "@/components/announcement-board";
-import houseIcon from '@/assets/house-hands.png.asset.json';
-import clockIcon from '@/assets/calendar-clock.png.asset.json';
-import phoneIcon from '@/assets/phone-call.png.asset.json';
-
-
-
+import houseIcon from "@/assets/house-hands.png";
+import clockIcon from "@/assets/calendar-clock.png";
+import phoneIcon from "@/assets/phone-call.png";
 
 import { groups } from "@/lib/groups";
 
@@ -37,13 +34,13 @@ export const Route = createFileRoute("/")({
 });
 
 const quickInfo = [
-  { icon: clockIcon.url, title: "Графік роботи", lines: ["Пн–Пт, 7:00–19:00", "Сб, Нд — вихідні"] },
+  { icon: clockIcon, title: "Графік роботи", lines: ["Пн–Пт, 7:00–19:00", "Сб, Нд — вихідні"] },
   {
-    icon: houseIcon.url,
+    icon: houseIcon,
     title: "Адреса",
     lines: ["м. Київ, Марганецька вул., 26A, 02092", "Кінцева: 33К, 555, 211"],
   },
-  { icon: phoneIcon.url, title: "Телефон", lines: ["+38 068 319 68 12 (kyivstar)"] },
+  { icon: phoneIcon, title: "Телефон", lines: ["+38 068 319 68 12 (kyivstar)"] },
 ];
 
 const steps: { n: string; title: string; text: string; items?: string[] }[] = [
