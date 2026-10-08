@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { GroupGallery } from "@/components/group-gallery";
+import { AnnouncementBoard } from "@/components/announcement-board";
 
 
 
@@ -42,11 +43,6 @@ const quickInfo = [
   { icon: "☎️", title: "Телефон", lines: ["+38 068 319 68 12 (kyivstar)"] },
 ];
 
-const news = [
-  { date: "Щодня", tag: "Батькам", title: "День відкритих дверей 24/7", text: "Ми завжди відкриті до спілкування." },
-  { date: "24/7", tag: "Безпека", title: "Наше укриття", text: "Для учасників освітнього процесу укриття працює цілодобово та розраховане на 300 осіб." },
-];
-
 const steps: { n: string; title: string; text: string; items?: string[] }[] = [
   { n: "1", title: "Онлайн запис", text: "Заповніть заявку в системі СЕ ЗДО." },
   { n: "2", title: "Прийняття запрошення", text: "Підтвердьте запрошення до закладу." },
@@ -71,7 +67,7 @@ function Home() {
       <section className="grid items-center gap-8 py-10 lg:grid-cols-2 lg:py-14">
         <div>
           <span className="inline-flex items-center gap-2 rounded-md border-2 border-primary-deep bg-sun px-4 py-1.5 font-display text-xs font-bold text-sun-foreground">
-            🌻 Набір на поточний навчальний рік відкрито
+            Набір на поточний навчальний рік відкрито
           </span>
           <h1 className="mt-5 font-display text-4xl leading-tight text-primary-deep sm:text-5xl">
             Садочок, де дитина росте в теплі й дружбі
@@ -175,29 +171,11 @@ function Home() {
       </section>
 
       {/* Дошка оголошень */}
-      <section className="pb-14">
-        <div className="border-2 border-primary-deep bg-primary p-6 text-primary-foreground shadow-toy sm:p-8 rounded-3xl">
-          <h2 className="mb-6 font-display text-3xl">Дошка оголошень</h2>
-          <div className="grid gap-4 md:grid-cols-2">
-            {news.map((n) => (
-              <article key={n.title} className="p-5 text-foreground toy-card toy-hover">
-                <div className="flex items-center justify-between">
-                  <span className="font-display text-xs font-bold text-accent">{n.date}</span>
-                  <span className="rounded-md border-2 border-primary-deep bg-mint px-2.5 py-0.5 text-xs font-bold text-primary-deep">
-                    {n.tag}
-                  </span>
-                </div>
-                <h3 className="mt-3 font-display text-lg text-primary-deep">{n.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{n.text}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+      <AnnouncementBoard />
 
       <section className="pb-14">
         <h2 className="mb-6 font-display text-3xl text-primary-deep sm:text-4xl">Наше життя</h2>
-        <GroupGallery />
+        <GroupGallery home />
       </section>
 
       {/* Як записати */}
