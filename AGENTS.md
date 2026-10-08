@@ -14,3 +14,5 @@
 - Keep admin identity in one root session provider; verify users through Auth and permissions through the database role function, with RLS enforcing every photo operation.
 - Read private-bucket photos through expiring signed URLs and invalidate shared photo queries after mutations so public displays reflect saved changes.
 - Record anonymous route view counts without personal identifiers; exclude the admin page from counts.
+- Persist named gallery folders separately and associate photos through nullable folder_id; null identifies the existing home-only photo collection so named albums never leak into the home rotation.
+- Keep added announcements in an admin-writable, publicly readable table; render the original announcements before saved additions to preserve the existing board.
