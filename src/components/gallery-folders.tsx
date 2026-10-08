@@ -13,7 +13,7 @@ import type { SitePhoto } from '@/lib/site-photos';
 export function PhotoStrip({ photos }: { photos: { src: string; alt: string }[] }) {
   return <div className="flex snap-x gap-4 overflow-x-auto pb-4" aria-label="Фото групи">
     {photos.map((photo, index) => <div key={`${photo.src}-${index}`} className="w-72 shrink-0 snap-start overflow-hidden rounded-md border border-border sm:w-96">
-      <ZoomImage src={photo.src} alt={photo.alt} className="aspect-video w-full bg-muted object-contain" />
+     <ZoomImage src={photo.src} alt={photo.alt} className="aspect-video w-full bg-muted object-cover" />
     </div>)}
   </div>;
 }

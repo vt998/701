@@ -90,7 +90,7 @@ function Team() {
             className={`overflow-hidden toy-card ${admin ? "cursor-grab" : "toy-hover"} ${drag === index ? "opacity-50" : ""}`}>
             {admin ? <Input className="m-2 w-[calc(100%-1rem)] font-display text-sm font-bold" aria-label="Посада" defaultValue={m.position} onBlur={e => e.target.value !== m.position && void update(m.id, { position: e.target.value })} />
               : <p className="p-4 font-display text-sm font-bold text-accent">{m.position}</p>}
-            <ZoomImage src={m.src} alt={`Фото: ${m.position}`} width={640} height={640} className="aspect-square w-full border-y border-primary-deep bg-muted object-contain" />
+            <ZoomImage src={m.src} alt={`Фото: ${m.position}`} width={640} height={640} className="aspect-square w-full border-y border-primary-deep bg-muted object-cover" />
             {admin ? <div className="space-y-2 p-2">
               <Input aria-label="Ім’я та прізвище" defaultValue={m.name} onBlur={e => e.target.value !== m.name && void update(m.id, { name: e.target.value })} />
               <div className="flex gap-2"><PhotoButton disabled={busy} onFile={f => void setPhoto(m, f)} /><Button size="sm" variant="destructive" disabled={busy} onClick={() => remove(m)}><Trash2 />Видалити</Button></div>
