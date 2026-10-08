@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { GroupGallery } from "@/components/group-gallery";
 import { AnnouncementBoard } from "@/components/announcement-board";
+import houseIcon from '@/assets/house-hands.png.asset.json';
+import clockIcon from '@/assets/calendar-clock.png.asset.json';
+import phoneIcon from '@/assets/phone-call.png.asset.json';
 
 
 
@@ -34,13 +37,13 @@ export const Route = createFileRoute("/")({
 });
 
 const quickInfo = [
-  { icon: "⏰", title: "Графік роботи", lines: ["Пн–Пт, 7:00–19:00", "Сб, Нд — вихідні"] },
+  { icon: clockIcon.url, title: "Графік роботи", lines: ["Пн–Пт, 7:00–19:00", "Сб, Нд — вихідні"] },
   {
-    icon: "🏡",
+    icon: houseIcon.url,
     title: "Адреса",
     lines: ["м. Київ, Марганецька вул., 26A, 02092", "Кінцева: 33К, 555, 211"],
   },
-  { icon: "☎️", title: "Телефон", lines: ["+38 068 319 68 12 (kyivstar)"] },
+  { icon: phoneIcon.url, title: "Телефон", lines: ["+38 068 319 68 12 (kyivstar)"] },
 ];
 
 const steps: { n: string; title: string; text: string; items?: string[] }[] = [
@@ -95,7 +98,7 @@ function Home() {
         {quickInfo.map((item) => (
           <div key={item.title} className="p-6 toy-card toy-hover">
             <span className="grid size-12 place-items-center rounded-md border-2 border-primary-deep bg-mint text-xl">
-              {item.icon}
+              <img src={item.icon} alt="" aria-hidden="true" className="size-7 object-contain" />
             </span>
             <h2 className="mt-4 font-display text-lg text-primary-deep">{item.title}</h2>
             {item.lines.map((line) => (
