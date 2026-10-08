@@ -1,7 +1,5 @@
 # ЗДО 701: Вебсайт
 
-build a website for ЗДО 701 , use info from this facebook page https://www.facebook.com/groups/282211470089286/?ref=share_group_link&rdid=qs78blH8Lx4NXaAH&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2Fg%2F1DL1kwYXvt%2F# , все має буть українською
-
 This project was built with [Lovable](https://lovable.dev).
 
 ## Build with Lovable
