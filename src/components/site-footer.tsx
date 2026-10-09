@@ -10,7 +10,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
         <div className="grid gap-3 border-b border-primary-foreground/25 pb-4 md:grid-cols-2">
           <p className={item}>ЗДО № 701 · м. Київ, Марганецька вул., 26A, 02092</p>
-          <p className={`${item} md:text-right`}>+38 063 319 68 12 (kyivstar)</p>
+          <p className={`${item} md:text-right`}>+38 063 319 68 12 (lifecell)</p>
         </div>
         <div className="flex flex-col gap-4 pt-4 lg:flex-row lg:items-center lg:justify-between">
           <p className={`hidden md:block ${item}`}>Зроблено з турботою про кожну дитину</p>

@@ -42,7 +42,7 @@ const quickInfo = [
     title: "Адреса",
     lines: ["м. Київ, Марганецька вул., 26A, 02092", "Кінцева: 33К, 555, 211"],
   },
-  { icon: phoneIcon, title: "Телефон", lines: ["+38 063 319 68 12 (kyivstar)"] },
+  { icon: phoneIcon, title: "Телефон", lines: ["+38 063 319 68 12 (lifecell)"] },
 ];
 
 const steps: { n: string; title: string; text: string; items?: string[] }[] = [
