@@ -16,9 +16,12 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-6">
-        <Link to="/" className="flex items-center">
+        <Link to="/" className="flex items-center gap-3">
+          <img src="/favicon.png" alt="Логотип ЗДО № 701" className="h-12 w-12 object-contain" />
           <span className="leading-tight">
-            <span className="block font-display text-lg font-bold text-primary-deep">ЗДО № 701</span>
+            <span className="block font-display text-lg font-bold text-primary-deep">
+              ЗДО № 701
+            </span>
             <span className="block text-xs text-muted-foreground">заклад дошкільної освіти</span>
           </span>
         </Link>

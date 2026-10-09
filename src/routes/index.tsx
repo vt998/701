@@ -67,7 +67,7 @@ function Home() {
       <section className="grid items-center gap-8 py-10 lg:grid-cols-2 lg:py-14">
         <div>
           <span className="inline-flex items-center gap-2 rounded-md border-2 border-primary-deep bg-sun px-4 py-1.5 font-display text-xs font-bold text-sun-foreground">
-            Набір на поточний навчальний рік відкрито
+            Набір на поточний навчальний рік відкрито!
           </span>
           <h1 className="mt-5 font-display text-4xl leading-tight text-primary-deep sm:text-5xl">
             Садочок, де дитина росте в теплі й дружбі
