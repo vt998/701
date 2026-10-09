@@ -3,11 +3,6 @@ import { useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ImagePlus, Plus, Trash2 } from "lucide-react";
 
-import aboutImg from "@/assets/about-classroom.jpg";
-import gallery1 from "@/assets/gallery-1.jpg";
-import gallery2 from "@/assets/gallery-2.jpg";
-import gallery3 from "@/assets/gallery-3.jpg";
-import gallery4 from "@/assets/gallery-4.jpg";
 import { ZoomImage } from "@/components/zoom-image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,8 +24,7 @@ export const Route = createFileRoute("/team")({
   component: Team,
 });
 
-const placeholders = [aboutImg, gallery1, gallery2, gallery3, gallery4];
-type Member = { id: string; position: string; name: string; storage_path: string | null; sort_order: number; src: string };
+type Member = { id: string; position: string; name: string; storage_path: string | null; sort_order: number; src: string | null };
 
 function Team() {
   const { admin } = useAdminSession();
@@ -41,8 +35,8 @@ function Team() {
   const { data: members = [], isLoading } = useQuery({ queryKey: ["team"], queryFn: async (): Promise<Member[]> => {
     const { data, error } = await supabase.from("team_members").select("*").order("sort_order").order("created_at");
     if (error) throw error;
-    return Promise.all((data ?? []).map(async (m, i) => {
-      let src = placeholders[i % placeholders.length] ?? aboutImg;
+    return Promise.all((data ?? []).map(async (m) => {
+      let src: string | null = null;
       if (m.storage_path) { const { data: u } = await supabase.storage.from("site-photos").createSignedUrl(m.storage_path, 3600); if (u) src = u.signedUrl; }
       return { ...m, src };
     }));
@@ -90,7 +84,20 @@ function Team() {
             className={`overflow-hidden toy-card ${admin ? "cursor-grab" : "toy-hover"} ${drag === index ? "opacity-50" : ""}`}>
             {admin ? <Input className="m-2 w-[calc(100%-1rem)] font-display text-sm font-bold" aria-label="Посада" defaultValue={m.position} onBlur={e => e.target.value !== m.position && void update(m.id, { position: e.target.value })} />
               : <p className="p-4 font-display text-sm font-bold text-accent">{m.position}</p>}
-            <ZoomImage src={m.src} alt={`Фото: ${m.position}`} width={640} height={640} className="aspect-square w-full border-y border-primary-deep bg-muted object-cover" />
+            <div className="relative aspect-square w-full border-y border-primary-deep bg-secondary">
+              <div className="absolute inset-0 grid place-items-center p-4 text-center font-display text-base font-bold text-primary-deep/70">
+                Фото буде додано
+              </div>
+              {m.src && (
+                <ZoomImage
+                  src={m.src}
+                  alt={`Фото: ${m.position}`}
+                  width={640}
+                  height={640}
+                  className="relative h-full w-full object-cover"
+                />
+              )}
+            </div>
             {admin ? <div className="space-y-2 p-2">
               <Input aria-label="Ім’я та прізвище" defaultValue={m.name} onBlur={e => e.target.value !== m.name && void update(m.id, { name: e.target.value })} />
               <div className="flex gap-2"><PhotoButton disabled={busy} onFile={f => void setPhoto(m, f)} /><Button size="sm" variant="destructive" disabled={busy} onClick={() => remove(m)}><Trash2 />Видалити</Button></div>

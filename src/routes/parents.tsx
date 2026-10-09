@@ -139,8 +139,7 @@ function Parents() {
           </div>
         </div>
         <div className="p-5 toy-card">
-          <p className="font-display text-xl text-primary-deep">{selectedMealDay}</p>
-          <div className="mt-4 grid gap-4 md:grid-cols-3">
+  <div className="grid gap-4 md:grid-cols-3">
             {mealPhotos.map((meal) => (
               <article key={`${selectedMealDay}-${meal.meal}`} className="rounded-md bg-muted p-3">
                 <ZoomImage
@@ -157,26 +156,26 @@ function Parents() {
         </div>
       </section>
 
-      <section className="pb-14">
-        <h2 className="mb-6 font-display text-3xl text-primary-deep">Медичне обслуговування</h2>
-        <div className="grid gap-5 md:grid-cols-2">
-          {medical.map((item) => (
-            <article key={item.title} className="grid gap-4 p-4 toy-card sm:grid-cols-[180px_1fr]">
-              <ZoomImage
-                src={item.img}
-                alt={item.alt}
-                width={816}
-                height={816}
-                className="aspect-video w-full rounded-md object-cover"
-              />
-              <div>
-                <h3 className="font-display text-xl text-primary-deep">{item.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{item.text}</p>
-              </div>
-            </article>
-          ))}
+ <section className="pb-14">
+  <h2 className="mb-6 font-display text-3xl text-primary-deep">Медичне обслуговування</h2>
+  <div className="grid gap-5 md:grid-cols-2">
+    {medical.map((item) => (
+      <article key={item.title} className="grid gap-4 p-4 toy-card sm:grid-cols-[220px_1fr] sm:items-center">
+        <ZoomImage
+          src={item.img}
+          alt={item.alt}
+          width={816}
+          height={816}
+          className="aspect-[4/3] w-full rounded-md object-cover"
+        />
+        <div>
+          <h3 className="font-display text-xl text-primary-deep">{item.title}</h3>
+          <p className="mt-2 text-base text-muted-foreground">{item.text}</p>
         </div>
-      </section>
+      </article>
+    ))}
+  </div>
+</section>
 
       <section className="pb-14">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-3">

@@ -22,7 +22,7 @@ export function SiteHeader() {
             <span className="block font-display text-lg font-bold text-primary-deep">
               ЗДО № 701
             </span>
-            <span className="block text-xs text-muted-foreground">заклад дошкільної освіти</span>
+            <span className="block text-xs text-muted-foreground">Заклад дошкільної освіти</span>
           </span>
         </Link>
 

@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { GroupGallery } from "@/components/group-gallery";
 import { AnnouncementBoard } from "@/components/announcement-board";
 import houseIcon from "@/assets/house-hands.png";
@@ -40,7 +42,7 @@ const quickInfo = [
     title: "Адреса",
     lines: ["м. Київ, Марганецька вул., 26A, 02092", "Кінцева: 33К, 555, 211"],
   },
-  { icon: phoneIcon, title: "Телефон", lines: ["+38 068 319 68 12 (kyivstar)"] },
+  { icon: phoneIcon, title: "Телефон", lines: ["+38 063 319 68 12 (kyivstar)"] },
 ];
 
 const steps: { n: string; title: string; text: string; items?: string[] }[] = [
@@ -49,16 +51,53 @@ const steps: { n: string; title: string; text: string; items?: string[] }[] = [
   {
     n: "3",
     title: "Надання документів",
-    text: "",
+    text: "Підготуйте пакет документів для зарахування дитини:",
     items: [
-      "Заява про зарахування",
+      "заяви батьків або опікунів на зарахування",
       "Копія і оригінал свідоцтва про народження дитини",
-      "Копія і оригінал медичної довідки про стан здоров’я дитини та карта профілактичних щеплень",
+      "Копія і оригінал медичної довідки про стан здоров’я дитини з висновком лікаря, що дитина може відвідувати заклад дошкільної освіти та карта профілактичних щеплень",
+      "Довідки дільничного лікаря про епідеміологічне оточення",
       "Згода на обробку персональних даних",
     ],
   },
   { n: "4", title: "Знайомство", text: "Зустріч із вихователем і екскурсія групою." },
 ];
+
+function DocsStep({ title, text, items }: { title: string; text: string; items: string[] }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="mt-4">
+      <h3 className="font-display text-lg text-primary-deep">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          className="flex cursor-pointer items-center gap-2 text-left"
+        >
+          {title}
+          <ChevronDown
+            className={`size-5 shrink-0 transition-transform duration-300 ${open ? "rotate-180" : ""}`}
+          />
+        </button>
+      </h3>
+      {text && <p className="mt-1 text-sm text-muted-foreground">{text}</p>}
+      <div
+        className={`grid transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none ${
+          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="overflow-hidden">
+          <ul className="list-disc space-y-1 pl-5 pt-2 text-sm text-muted-foreground">
+            {items.map((it) => (
+              <li key={it}>{it}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function Home() {
   return (
@@ -73,11 +112,13 @@ function Home() {
             Садочок, де дитина росте в теплі й дружбі
           </h1>
           <p className="mt-5 max-w-prose text-lg text-muted-foreground">
-            Дитячий садок пишається тим, що дотримується найвищих стандартів освіти та виховання.
-            Наш сумлінний персонал прагне забезпечити сприятливе середовище, в якому буде
-            розвиватися ваша дитина.
+            Заклад дошкільної освіти № 701 розпочав свою роботу у 1980 році та наразі працює за
+            освітньою програмою для дітей від 2 до 7 років "Дитина" та Програмою від 1-го року "Я у
+            Світі". Пріоритетний напрямок роботи закладу: виховання у дітей екологічної культури
+            через впровадження трудових завдань та завдань з охорони природи. Дитячий садок
+            пишається тим, що дотримується найвищих стандартів освіти та виховання. Наш сумлінний
+            персонал прагне забезпечити сприятливе середовище, в якому буде розвиватися ваша дитина.
           </p>
-          <p className="mt-4 max-w-prose font-display text-lg text-primary-deep">__________</p>
         </div>
         <div className="overflow-hidden p-3 toy-card">
           <img
@@ -131,9 +172,11 @@ function Home() {
           <ul className="mt-6 space-y-3">
             {[
               "Власний ігровий майданчик і зелений двір",
-              "Музика, хореографія та художня майстерня",
+              "Музика, хореографія та розвиток мовлення - проводяться два рази на тиждень",
               "Трьохразове харчування за збалансованим меню",
               "Логопед і практичний психолог",
+              "Власний генератор потужністтю 160 кв, що дає змогу завжди вчасно приготувати їжу",
+              "Харчоблок садочка, оснащений новітнім обладнанням",
             ].map((line) => (
               <li key={line} className="flex gap-3">
                 <span className="grid size-7 shrink-0 place-items-center rounded-md border-2 border-primary-deep bg-sun text-xs">
@@ -191,14 +234,13 @@ function Home() {
                 <span className="grid size-12 place-items-center rounded-md border-2 border-primary-deep bg-sun font-display text-lg font-bold text-sun-foreground shadow-toy-sm">
                   {s.n}
                 </span>
-                <h3 className="mt-4 font-display text-lg text-primary-deep">{s.title}</h3>
-                {s.text && <p className="mt-1 text-sm text-muted-foreground">{s.text}</p>}
-                {s.items && (
-                  <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
-                    {s.items.map((it) => (
-                      <li key={it}>{it}</li>
-                    ))}
-                  </ul>
+                {s.items ? (
+                  <DocsStep title={s.title} text={s.text} items={s.items} />
+                ) : (
+                  <>
+                    <h3 className="mt-4 font-display text-lg text-primary-deep">{s.title}</h3>
+                    {s.text && <p className="mt-1 text-sm text-muted-foreground">{s.text}</p>}
+                  </>
                 )}
               </div>
             ))}
