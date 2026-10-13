@@ -65,29 +65,38 @@ export type Database = {
         };
         Relationships: [];
       };
-      gallery_folders: {
+            gallery_folders: {
         Row: {
           created_at: string;
+          event_date: string | null;
           group_slug: string;
           id: string;
           section: string;
           sort_order: number;
+          teachers: string | null;
+          theme: string | null;
           title: string;
         };
         Insert: {
           created_at?: string;
+          event_date?: string | null;
           group_slug: string;
           id?: string;
           section: string;
           sort_order?: number;
+          teachers?: string | null;
+          theme?: string | null;
           title: string;
         };
         Update: {
           created_at?: string;
+          event_date?: string | null;
           group_slug?: string;
           id?: string;
           section?: string;
           sort_order?: number;
+          teachers?: string | null;
+          theme?: string | null;
           title?: string;
         };
         Relationships: [];

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2 } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminSession } from "@/components/admin-session";
@@ -29,15 +29,10 @@ export const Route = createFileRoute("/documents")({
   component: Documents,
 });
 
-const staticDocuments = [
-  {
-    id: "statut",
-    title: "Статут закладу",
-    description: "Офіційний документ закладу.",
-    filePath: "/documents/statut.pdf",
-    static: true,
-  },
-];
+// Шлях, що починається з "/", це файл сайту (public/), інакше файл у сховищі Supabase
+const isLocalPath = (path: string) => path.startsWith("/");
+const fileUrl = (path: string) =>
+  isLocalPath(path) ? path : supabase.storage.from("documents").getPublicUrl(path).data.publicUrl;
 
 function Documents() {
   const { admin } = useAdminSession();
@@ -47,10 +42,16 @@ function Documents() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState<File | null>(null);
+
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editFile, setEditFile] = useState<File | null>(null);
+
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  const { data: savedDocuments = [], isLoading } = useQuery({
+  const { data: documents = [], isLoading } = useQuery({
     queryKey: ["documents"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -65,16 +66,18 @@ function Documents() {
     },
   });
 
-  const documents = [
-    ...staticDocuments,
-    ...savedDocuments.map((document) => ({
-      id: document.id,
-      title: document.title,
-      description: document.description || "",
-      filePath: document.file_path,
-      static: false,
-    })),
-  ];
+  async function uploadPdf(pdf: File) {
+    const extension = pdf.name.toLowerCase().endsWith(".pdf") ? ".pdf" : "";
+    const filePath = `${crypto.randomUUID()}${extension}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("documents")
+      .upload(filePath, pdf, { contentType: "application/pdf", upsert: false });
+
+    if (uploadError) throw uploadError;
+
+    return filePath;
+  }
 
   async function addDocument(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -93,24 +96,13 @@ function Documents() {
     setError("");
 
     try {
-      const extension = file.name.toLowerCase().endsWith(".pdf") ? ".pdf" : "";
-
-      const filePath = `${crypto.randomUUID()}${extension}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("documents")
-        .upload(filePath, file, {
-          contentType: "application/pdf",
-          upsert: false,
-        });
-
-      if (uploadError) throw uploadError;
+      const filePath = await uploadPdf(file);
 
       const { error: insertError } = await supabase.from("documents").insert({
         title: title.trim(),
         description: description.trim() || null,
         file_path: filePath,
-        sort_order: savedDocuments.length,
+        sort_order: Math.max(-1, ...documents.map((d) => d.sort_order)) + 1,
       });
 
       if (insertError) {
@@ -123,16 +115,86 @@ function Documents() {
       setFile(null);
       setCreating(false);
 
-      const input = document.getElementById("document-file") as HTMLInputElement | null;
-
+      const input = window.document.getElementById("document-file") as HTMLInputElement | null;
       if (input) input.value = "";
 
-      await queryClient.invalidateQueries({
-        queryKey: ["documents"],
-      });
+      await queryClient.invalidateQueries({ queryKey: ["documents"] });
     } catch (err) {
       console.error(err);
       setError("Не вдалося додати документ. Спробуйте ще раз.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function startEditing(doc: { id: string; title: string; description: string | null }) {
+    setEditingId(doc.id);
+    setEditTitle(doc.title);
+    setEditDescription(doc.description ?? "");
+    setEditFile(null);
+    setCreating(false);
+    setError("");
+  }
+
+  function cancelEditing() {
+    setEditingId(null);
+    setEditFile(null);
+    setError("");
+  }
+
+  async function saveEdit(event: React.FormEvent<HTMLFormElement>, oldPath: string) {
+    event.preventDefault();
+
+    if (!editingId) return;
+
+    if (!editTitle.trim()) {
+      setError("Вкажіть назву документа.");
+      return;
+    }
+
+    if (editFile && editFile.type !== "application/pdf") {
+      setError("Можна завантажувати лише PDF-файли.");
+      return;
+    }
+
+    setBusy(true);
+    setError("");
+
+    let newPath: string | null = null;
+
+    try {
+      const changes: { title: string; description: string | null; file_path?: string } = {
+        title: editTitle.trim(),
+        description: editDescription.trim() || null,
+      };
+
+      if (editFile) {
+        newPath = await uploadPdf(editFile);
+        changes.file_path = newPath;
+      }
+
+      const { data, error: updateError } = await supabase
+        .from("documents")
+        .update(changes)
+        .eq("id", editingId)
+        .select();
+
+      if (updateError) throw updateError;
+      if (!data || data.length === 0) throw new Error("Немає прав на зміну документа");
+
+      // Старий файл видаляємо лише якщо він був у сховищі (файли сайту не чіпаємо)
+      if (newPath && !isLocalPath(oldPath)) {
+        await supabase.storage.from("documents").remove([oldPath]);
+      }
+
+      setEditingId(null);
+      setEditFile(null);
+
+      await queryClient.invalidateQueries({ queryKey: ["documents"] });
+    } catch (err) {
+      console.error(err);
+      if (newPath) await supabase.storage.from("documents").remove([newPath]);
+      setError("Не вдалося зберегти зміни. Спробуйте ще раз.");
     } finally {
       setBusy(false);
     }
@@ -145,17 +207,19 @@ function Documents() {
     setError("");
 
     try {
-      const { error: storageError } = await supabase.storage.from("documents").remove([filePath]);
+      if (!isLocalPath(filePath)) {
+        const { error: storageError } = await supabase.storage
+          .from("documents")
+          .remove([filePath]);
 
-      if (storageError) throw storageError;
+        if (storageError) throw storageError;
+      }
 
       const { error: deleteError } = await supabase.from("documents").delete().eq("id", id);
 
       if (deleteError) throw deleteError;
 
-      await queryClient.invalidateQueries({
-        queryKey: ["documents"],
-      });
+      await queryClient.invalidateQueries({ queryKey: ["documents"] });
     } catch (err) {
       console.error(err);
       setError("Не вдалося видалити документ. Спробуйте ще раз.");
@@ -184,6 +248,7 @@ function Documents() {
                 variant="outline"
                 onClick={() => {
                   setCreating(true);
+                  setEditingId(null);
                   setError("");
                 }}
               >
@@ -193,6 +258,7 @@ function Documents() {
             </div>
           )}
         </div>
+
         {admin && creating && (
           <form onSubmit={addDocument} className="mb-6 max-w-xl space-y-3 rounded-lg p-5 toy-card">
             <h3 className="font-display text-xl text-primary-deep">Новий документ</h3>
@@ -247,82 +313,137 @@ function Documents() {
           </form>
         )}
 
-        {error && !creating && <p className="mb-4 text-sm text-destructive">{error}</p>}
+        {error && !creating && !editingId && (
+          <p className="mb-4 text-sm text-destructive">{error}</p>
+        )}
 
         {isLoading ? (
           <p className="text-muted-foreground">Завантаження...</p>
         ) : (
           <ul className="grid gap-4 md:grid-cols-2">
-            {documents.map((document, index) => {
-              const savedIndex = index - 1;
-
+            {documents.map((doc, index) => {
               const isLastCentered =
-                !document.static &&
-                savedDocuments.length >= 3 &&
-                savedDocuments.length % 2 === 1 &&
-                savedIndex === savedDocuments.length - 1;
+                documents.length >= 3 &&
+                documents.length % 2 === 1 &&
+                index === documents.length - 1;
+
+              const url = fileUrl(doc.file_path);
 
               return (
                 <li
-                  key={document.id}
+                  key={doc.id}
                   className={`min-w-0 p-5 toy-card ${
                     isLastCentered
                       ? "md:col-span-2 md:w-[calc(50%-0.5rem)] md:justify-self-center"
                       : ""
                   }`}
                 >
-                  <div className="flex items-start gap-4">
-                    <span className="grid size-12 shrink-0 place-items-center rounded-md border-2 border-primary-deep bg-sun font-display text-[11px] font-bold text-sun-foreground">
-                      PDF
-                    </span>
+                  {admin && editingId === doc.id ? (
+                    <form
+                      onSubmit={(event) => saveEdit(event, doc.file_path)}
+                      className="space-y-3"
+                    >
+                      <Input
+                        aria-label="Назва документа"
+                        placeholder="Назва документа"
+                        value={editTitle}
+                        onChange={(event) => setEditTitle(event.target.value)}
+                      />
 
-                    <div className="min-w-0 flex-1">
-                      <a
-                        href={
-                          document.static
-                            ? document.filePath
-                            : supabase.storage.from("documents").getPublicUrl(document.filePath)
-                                .data.publicUrl
-                        }
-                        target="_blank"
-                        rel="noreferrer"
-                        className="font-display text-lg font-bold text-primary-deep underline decoration-2 underline-offset-4"
-                      >
-                        {document.title}
-                      </a>
+                      <Textarea
+                        aria-label="Короткий опис"
+                        placeholder="Короткий опис"
+                        value={editDescription}
+                        onChange={(event) => setEditDescription(event.target.value)}
+                      />
 
-                      {document.description && (
-                        <p className="mt-1 text-sm text-muted-foreground">{document.description}</p>
-                      )}
+                      <div>
+                        <label className="mb-2 block text-sm font-medium">
+                          Замінити PDF (необов’язково)
+                        </label>
 
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        <a
-                          href={
-                            document.static
-                              ? document.filePath
-                              : supabase.storage.from("documents").getPublicUrl(document.filePath)
-                                  .data.publicUrl
-                          }
-                          download
-                          className="inline-flex bg-primary text-primary-foreground toy-btn"
+                        <Input
+                          type="file"
+                          accept="application/pdf,.pdf"
+                          onChange={(event) => setEditFile(event.target.files?.[0] ?? null)}
+                        />
+                      </div>
+
+                      {error && <p className="text-sm text-destructive">{error}</p>}
+
+                      <div className="flex flex-wrap gap-2">
+                        <Button type="submit" disabled={busy}>
+                          {busy ? "Збереження..." : "Зберегти"}
+                        </Button>
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          disabled={busy}
+                          onClick={cancelEditing}
                         >
-                          Завантажити
+                          Скасувати
+                        </Button>
+                      </div>
+                    </form>
+                  ) : (
+                    <div className="flex items-start gap-4">
+                      <span className="grid size-12 shrink-0 place-items-center rounded-md border-2 border-primary-deep bg-sun font-display text-[11px] font-bold text-sun-foreground">
+                        PDF
+                      </span>
+
+                      <div className="min-w-0 flex-1">
+                        <a
+                          href={url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="break-words font-display text-lg font-bold text-primary-deep underline decoration-2 underline-offset-4"
+                        >
+                          {doc.title}
                         </a>
 
-                        {admin && !document.static && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            disabled={busy}
-                            onClick={() => deleteDocument(document.id, document.filePath)}
-                          >
-                            <Trash2 />
-                            Видалити
-                          </Button>
+                        {doc.description && (
+                          <p className="mt-1 whitespace-pre-wrap break-words text-sm text-muted-foreground">
+                            {doc.description}
+                          </p>
                         )}
+
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <a
+                            href={url}
+                            download
+                            className="inline-flex bg-primary text-primary-foreground toy-btn"
+                          >
+                            Завантажити
+                          </a>
+
+                          {admin && (
+                            <>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                disabled={busy}
+                                onClick={() => startEditing(doc)}
+                              >
+                                <Pencil />
+                                Змінити
+                              </Button>
+
+                              <Button
+                                type="button"
+                                variant="outline"
+                                disabled={busy}
+                                onClick={() => deleteDocument(doc.id, doc.file_path)}
+                              >
+                                <Trash2 />
+                                Видалити
+                              </Button>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </li>
               );
             })}
