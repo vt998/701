@@ -16,7 +16,8 @@ export function SiteFooter() {
           <p className={`hidden md:block ${item}`}>Зроблено з турботою про кожну дитину</p>
           <nav aria-label="Посилання внизу сторінки" className="flex flex-col items-start gap-3 md:flex-row md:flex-wrap md:items-center md:gap-x-6">
             <Link to="/privacy" className={`${item} hover:underline`}>Політика конфіденційності</Link>
-            <Link to="/accessibility" className={`${item} hover:underline`}>Доступність</Link>
+          
+         {/* <Link to="/accessibility" className={`${item} hover:underline`}>Доступність</Link> */}
             <a href={FB} target="_blank" rel="noreferrer" className={`${item} hover:underline`}>Facebook</a>
             <Link to="/admin" className={`${item} hover:underline`}>Вхід</Link>
           </nav>

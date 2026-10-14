@@ -1,6 +1,6 @@
 import { useRef, useState, type ChangeEvent } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { FolderPlus, Folder, Pencil, Trash2, Check, X, ArrowLeft, ArrowRight } from 'lucide-react';
+import { FolderPlus, Folder, Pencil, Trash2, Check, X, ArrowLeft, ArrowRight, GripVertical, ChevronDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAdminSession } from './admin-session';
 import { Button } from './ui/button';
@@ -8,6 +8,7 @@ import { Input } from './ui/input';
 import { PhotoManager } from './photo-manager';
 import { ZoomImage } from './zoom-image';
 import { photosInCollection } from '@/lib/gallery-rules';
+import { moveItem } from '@/lib/photo-rules';
 import type { SitePhoto } from '@/lib/site-photos';
 
 type FolderValues = { title: string; theme: string; teachers: string; date: string };
@@ -72,6 +73,9 @@ export function GalleryFolders({ groupSlug, section, photos }: { groupSlug: stri
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [editing, setEditing] = useState<string | null>(null);
+  const [drag, setDrag] = useState<number | null>(null);
+  const [over, setOver] = useState<number | null>(null);
+  const [openIds, setOpenIds] = useState<Set<string>>(new Set());
   const { data: folders = [], isError } = useQuery({
     queryKey: ['gallery-folders', groupSlug, section],
     queryFn: async () => {
@@ -92,6 +96,26 @@ export function GalleryFolders({ groupSlug, section, photos }: { groupSlug: stri
     teachers: v.teachers.trim() || null,
     event_date: v.date || null,
   });
+  const toggle = (id: string) => setOpenIds(prev => {
+    const next = new Set(prev);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    return next;
+  });
+  const drop = (target: number) => {
+    const from = drag;
+    setDrag(null);
+    setOver(null);
+    if (from === null || from === target) return;
+    const list = moveItem(folders, from, target);
+    void save(async () => {
+      for (const [i, f] of list.entries()) {
+        if (f.sort_order !== i) {
+          const { error } = await supabase.from('gallery_folders').update({ sort_order: i }).eq('id', f.id);
+          if (error) throw error;
+        }
+      }
+    });
+  };
   const unnamed = photosInCollection(photos, groupSlug, section, null);
   return <div className="space-y-8">
     {admin && <div>
@@ -106,12 +130,22 @@ export function GalleryFolders({ groupSlug, section, photos }: { groupSlug: stri
             })} />
           : <Button variant="outline" onClick={() => setCreating(true)}><FolderPlus />Створити папку</Button>}
       </div>
+      {folders.length > 0 && <p className="mt-3 text-sm text-muted-foreground">
+        Натисніть на назву папки, щоб розгорнути або згорнути її.{folders.length > 1 && ' Щоб змінити порядок, перетягніть папку за значок із крапками.'}
+      </p>}
     </div>}
     {(error || isError) && <p role="alert" className="text-destructive">{error || 'Не вдалося завантажити папки.'}</p>}
-    {folders.map(folder => {
+    {folders.map((folder, index) => {
       const images = photosInCollection(photos, groupSlug, section, folder.id);
-      const f = folder;
-      return <section key={folder.id} aria-label={folder.title}>
+      const f = folder as typeof folder & Partial<FolderExtra>;
+      const expanded = !admin || openIds.has(folder.id);
+      return <section
+        key={folder.id}
+        aria-label={folder.title}
+        onDragOver={e => { if (admin && drag !== null) { e.preventDefault(); setOver(index); } }}
+        onDrop={e => { if (admin && drag !== null) { e.preventDefault(); drop(index); } }}
+        className={`rounded-md ${drag === index ? 'opacity-50' : ''} ${over === index && drag !== null && drag !== index ? 'ring-2 ring-primary-deep ring-offset-4 ring-offset-background' : ''}`}
+      >
         {editing === folder.id
           ? <div className="mb-4">
               <FolderForm
@@ -127,7 +161,39 @@ export function GalleryFolders({ groupSlug, section, photos }: { groupSlug: stri
             </div>
           : <div className="mb-4 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
               <div className="min-w-0">
-                <h3 className="flex min-w-0 items-center gap-2 font-display text-xl text-primary-deep"><Folder className="size-5 shrink-0" /><span className="break-words">{folder.title}</span></h3>
+                <h3 className="flex min-w-0 items-center gap-2 font-display text-xl text-primary-deep">
+                  {admin && folders.length > 1 && <span
+                    draggable
+                    role="button"
+                    tabIndex={-1}
+                    aria-label={`Перетягнути папку ${folder.title}`}
+                    title="Перетягніть, щоб змінити порядок"
+                    onDragStart={e => {
+                      setDrag(index);
+                      e.dataTransfer.effectAllowed = 'move';
+                      e.dataTransfer.setData('text/plain', folder.id);
+                      const card = e.currentTarget.closest('section');
+                      if (card) e.dataTransfer.setDragImage(card, 24, 24);
+                    }}
+                    onDragEnd={() => { setDrag(null); setOver(null); }}
+                    className="grid cursor-grab touch-none place-items-center rounded-md p-1 text-muted-foreground hover:bg-secondary active:cursor-grabbing"
+                  ><GripVertical className="size-5" /></span>}
+                  {admin
+                    ? <button
+                        type="button"
+                        onClick={() => toggle(folder.id)}
+                        aria-expanded={expanded}
+                        className="flex min-w-0 cursor-pointer items-center gap-2 text-left"
+                      >
+                        <Folder className="size-5 shrink-0" />
+                        <span className="break-words">{folder.title}</span>
+                        <ChevronDown className={`size-5 shrink-0 transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`} />
+                      </button>
+                    : <>
+                        <Folder className="size-5 shrink-0" />
+                        <span className="break-words">{folder.title}</span>
+                      </>}
+                </h3>
                 {f.theme && <p className="mt-1 text-muted-foreground"><span className="font-bold text-primary-deep">Тема:</span> {f.theme}</p>}
                 {f.teachers && <p className="mt-1 text-muted-foreground"><span className="font-bold text-primary-deep">Вихователі:</span> {f.teachers}</p>}
                 {f.event_date && <p className="mt-1 text-muted-foreground"><span className="font-bold text-primary-deep">Дата:</span> {formatDate(f.event_date)}</p>}
@@ -137,8 +203,12 @@ export function GalleryFolders({ groupSlug, section, photos }: { groupSlug: stri
                 <Button size="icon" variant="ghost" disabled={busy || images.length > 0} title={images.length ? 'Спочатку видаліть фото папки' : 'Видалити папку'} aria-label={`Видалити папку ${folder.title}`} onClick={() => { if (window.confirm('Видалити порожню папку?')) void save(async () => { const { error } = await supabase.from('gallery_folders').delete().eq('id', folder.id); if (error) throw error; }); }}><Trash2 /></Button>
               </div>}
             </div>}
-        {admin && <PhotoManager section={section} groupSlug={groupSlug} folderId={folder.id} photos={images} />}
-        <PhotoStrip photos={images} />
+        <div className={`grid transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none ${expanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+          <div className={`overflow-hidden transition-[visibility] duration-300 ${expanded ? 'visible' : 'invisible'}`}>
+            {admin && <PhotoManager section={section} groupSlug={groupSlug} folderId={folder.id} photos={images} />}
+            <PhotoStrip photos={images} />
+          </div>
+        </div>
       </section>;
     })}
   </div>;

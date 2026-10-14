@@ -7,7 +7,8 @@ import houseIcon from "@/assets/house-hands.png";
 import clockIcon from "@/assets/calendar-clock.png";
 import phoneIcon from "@/assets/phone-call.png";
 
-import { groups } from "@/lib/groups";
+import { useGroups } from "@/lib/use-groups";
+import { GroupAdmin } from "@/components/group-admin";
 
 import heroImg from "@/assets/hero-kindergarten.jpg";
 import aboutImg from "@/assets/about-classroom.jpg";
@@ -100,6 +101,8 @@ function DocsStep({ title, text, items }: { title: string; text: string; items: 
 }
 
 function Home() {
+  const groups = useGroups();
+
   return (
     <main className="mx-auto max-w-6xl px-4 sm:px-6">
       {/* Герой */}
@@ -172,7 +175,7 @@ function Home() {
           <ul className="mt-6 space-y-3">
             {[
               "Власний ігровий майданчик і зелений двір",
-              "Музика, хореографія та розвиток мовлення - проводяться два рази на тиждень",
+              "Музика, хореографія та розвиток мовлення два рази на тиждень",
               "Трьохразове харчування за збалансованим меню",
               "Логопед і практичний психолог",
               "Власний генератор потужністтю 160 кв, що дає змогу завжди вчасно приготувати їжу",
@@ -211,6 +214,7 @@ function Home() {
             </div>
           ))}
         </div>
+        <GroupAdmin />
       </section>
 
       {/* Дошка оголошень */}
