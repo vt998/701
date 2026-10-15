@@ -380,14 +380,14 @@ function Parents() {
             return (
               <article
                 key={`${selectedRoutineGroup}-${step.title}`}
-                className="w-[85%] shrink-0 snap-start overflow-hidden p-2 toy-card sm:w-[28rem] lg:w-[34rem]"
+                className="w-[85%] shrink-0 snap-start overflow-hidden p-2 toy-card sm:w-[calc(50%-0.625rem)]"
               >
                 <ZoomImage
                   src={photo?.src ?? step.img}
                   alt={photo?.alt ?? step.alt}
                   width={816}
                   height={816}
-                  className="aspect-video w-full rounded-md object-cover"
+                 className="aspect-[4/3] w-full rounded-md object-cover"
                 />
 
                 <h3 className="mt-3 font-display text-lg text-primary-deep">
