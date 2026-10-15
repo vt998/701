@@ -106,6 +106,11 @@ export function GroupGallery({ initialGroup = null, home = false }: { initialGro
       });
   const photos = uploaded.length ? uploaded : fallback;
 
+  // Фото в корені вибраної категорії (без папки) — показуємо їх у галереї над папками.
+  const rootPhotos = selected && !home && currentCategory !== null
+    ? data.filter(p => p.group_slug === selected && p.section === section && p.folder_id === null)
+    : [];
+
   function resetForm() {
     setAddingTab(false);
     setAddingCat(false);
@@ -291,6 +296,7 @@ export function GroupGallery({ initialGroup = null, home = false }: { initialGro
     {selected && !home && virtualTab && currentCategory === null && <p className="text-muted-foreground">
       {admin ? 'Тут ще немає категорій. Натисніть «Нова категорія», щоб додати першу.' : 'Тут поки що порожньо.'}
     </p>}
+    {rootPhotos.length > 0 && <div className="mb-6"><PhotoStrip photos={rootPhotos} /></div>}
     {selected && !home && currentCategory !== null && <GalleryFolders key={`${selected}-${currentCategory}`} groupSlug={selected} section={section} photos={data} />}
   </div>;
 }
