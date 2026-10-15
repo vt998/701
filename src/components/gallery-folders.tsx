@@ -27,11 +27,11 @@ export function PhotoStrip({ photos }: { photos: { src: string; alt: string }[] 
   };
   return <div>
     <div ref={ref} className="flex snap-x gap-5 overflow-x-auto px-1 pb-4 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Фото групи">
-      {photos.map((photo, index) => <div key={`${photo.src}-${index}`} className="w-[85%] shrink-0 snap-start overflow-hidden p-2 toy-card sm:w-[28rem] lg:w-[34rem]">
+      {photos.map((photo, index) => <div key={`${photo.src}-${index}`} className="w-[85%] shrink-0 snap-start overflow-hidden p-2 toy-card sm:w-[calc(50%-0.625rem)]">
         <ZoomImage src={photo.src} alt={photo.alt} className="aspect-[4/3] w-full rounded-md bg-muted object-cover" />
       </div>)}
     </div>
-    {photos.length > 1 && <div className="mx-auto flex w-44 justify-between sm:w-60">
+    {photos.length > 2 && <div className="mx-auto flex w-44 justify-between sm:w-60">
       <Button type="button" variant="outline" size="icon" aria-label="Назад" title="Назад" onClick={() => scroll(-1)} className="rounded-full border-primary-deep bg-card"><ArrowLeft /></Button>
       <Button type="button" variant="outline" size="icon" aria-label="Далі" title="Далі" onClick={() => scroll(1)} className="rounded-full border-primary-deep bg-card"><ArrowRight /></Button>
     </div>}

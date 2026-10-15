@@ -12,6 +12,7 @@ import snidanok1 from "@/assets/snidanok1.jpg";
 import snidanok2 from "@/assets/snidanok2.jpg";
 import snidanok3 from "@/assets/snidanok3.jpg";
 import obid2 from "@/assets/obid2.jpg";
+import obid3 from "@/assets/obid3.jpg";
 
 import little_kid from "@/assets/little_kid.jpg";
 import playing from "@/assets/playing.jpg";
@@ -70,7 +71,7 @@ const adaptation = [
 
 // ХАРЧУВАННЯ: тут міняєш кількість фото.
 // Щоб додати фото, скопіюй рядок { img: ..., alt: "..." }, – і встав у потрібний список.
-// Щоб прибрати, видали рядок.
+// Щоб прибрати, видали рядок. Фото показуються стрічкою з прокруткою (як у галереї).
 const meals = [
   {
     name: "Сніданок",
@@ -85,7 +86,7 @@ const meals = [
     photos: [
       { img: kitchen, alt: "Обід у дитячому садочку" },
       { img: obid2, alt: "Обід у дитячому садочку" },
-      { img: gallery2, alt: "Обід у дитячому садочку" },
+      { img: obid3, alt: "Обід у дитячому садочку" },
     ],
   },
   {
@@ -144,6 +145,19 @@ function Parents() {
   );
 
   const mealPhotos = meals.find((m) => m.name === selectedMeal)?.photos ?? [];
+
+  const mealRef = useRef<HTMLDivElement>(null);
+
+  const scrollMeal = (dir: 1 | -1) => {
+    const el = mealRef.current;
+
+    if (el) {
+      el.scrollBy({
+        left: dir * el.clientWidth * 0.8,
+        behavior: "smooth",
+      });
+    }
+  };
 
   const routineRef = useRef<HTMLDivElement>(null);
 
@@ -220,7 +234,10 @@ function Parents() {
                 type="button"
                 variant={selectedMeal === meal.name ? "default" : "outline"}
                 size="sm"
-                onClick={() => setSelectedMeal(meal.name)}
+                onClick={() => {
+                  setSelectedMeal(meal.name);
+                  mealRef.current?.scrollTo({ left: 0 });
+                }}
                 aria-pressed={selectedMeal === meal.name}
                 className="w-full border-primary-deep px-1 font-display font-bold"
               >
@@ -230,21 +247,54 @@ function Parents() {
           </div>
         </div>
 
-        <div className="p-5 toy-card">
-          {/* Скільки фото в ряду: sm:grid-cols-2 і lg:grid-cols-3 */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {mealPhotos.map((photo, index) => (
+        <div
+          ref={mealRef}
+          className="flex snap-x gap-5 overflow-x-auto px-1 pb-4 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          aria-label="Фото харчування"
+        >
+          {mealPhotos.map((photo, index) => (
+            <article
+              key={`${selectedMeal}-${index}`}
+              className="w-[85%] shrink-0 snap-start overflow-hidden p-2 toy-card sm:w-[calc(50%-0.625rem)]"
+            >
               <ZoomImage
-                key={`${selectedMeal}-${index}`}
                 src={photo.img}
                 alt={photo.alt}
                 width={816}
                 height={816}
-                className="aspect-video w-full rounded-md border border-primary-deep object-cover"
+                className="aspect-[4/3] w-full rounded-md object-cover"
               />
-            ))}
-          </div>
+            </article>
+          ))}
         </div>
+
+        {mealPhotos.length > 1 && (
+          <div className="mx-auto flex w-44 justify-between sm:w-60">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              aria-label="Назад"
+              title="Назад"
+              onClick={() => scrollMeal(-1)}
+              className="rounded-full border-primary-deep bg-card"
+            >
+              <ArrowLeft />
+            </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              aria-label="Далі"
+              title="Далі"
+              onClick={() => scrollMeal(1)}
+              className="rounded-full border-primary-deep bg-card"
+            >
+              <ArrowRight />
+            </Button>
+          </div>
+        )}
       </section>
 
       {/* Здоров’я та щоденна турбота */}
