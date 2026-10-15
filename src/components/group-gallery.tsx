@@ -7,7 +7,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { GalleryFolders, PhotoStrip } from './gallery-folders';
 import { useGroups, type Group } from '@/lib/use-groups';
-import { categories, gallerySection, weeklyIndex, type GalleryCategory } from '@/lib/photo-rules';
+import { categories, gallerySection, weeklyIndex } from '@/lib/photo-rules';
 import { useSitePhotos } from '@/lib/site-photos';
 
 const commonGroup: Group = {
@@ -22,51 +22,80 @@ const commonGroup: Group = {
   overridden: false,
 };
 
-type CustomCategory = { id: string; name: string; sort_order: number };
+type CustomTab = { id: string; name: string; sort_order: number };
+type TabCategory = { id: string; group_slug: string; name: string; sort_order: number };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const categoriesTable = () => (supabase as any).from('gallery_categories');
+const tabsTable = () => (supabase as any).from('gallery_categories');
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const tabCategoriesTable = () => (supabase as any).from('gallery_tab_categories');
 
-function useCustomCategories() {
+function useCustomTabs() {
   return useQuery({
     queryKey: ['gallery-categories'],
-    queryFn: async (): Promise<CustomCategory[]> => {
-      const { data, error } = await categoriesTable().select('*').order('sort_order').order('created_at');
+    queryFn: async (): Promise<CustomTab[]> => {
+      const { data, error } = await tabsTable().select('*').order('sort_order').order('created_at');
       if (error) throw error;
       return data ?? [];
     },
   });
 }
 
-const builtIn: readonly string[] = categories;
-const isBuiltIn = (c: string) => builtIn.includes(c);
-const sectionFor = (c: string) => (isBuiltIn(c) ? gallerySection(c as GalleryCategory) : `groups:${c}`);
+function useTabCategories() {
+  return useQuery({
+    queryKey: ['gallery-tab-categories'],
+    queryFn: async (): Promise<TabCategory[]> => {
+      const { data, error } = await tabCategoriesTable().select('*').order('sort_order').order('created_at');
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+}
+
+const isVirtual = (slug: string | null) => slug === 'common' || (slug?.startsWith('custom-') ?? false);
 
 export function GroupGallery({ initialGroup = null, home = false }: { initialGroup?: string | null; home?: boolean }) {
   const { admin } = useAdminSession();
   const queryClient = useQueryClient();
   const baseGroups = useGroups();
-  const { data: customCategories = [] } = useCustomCategories();
+  const { data: customTabs = [] } = useCustomTabs();
+  const { data: tabCategories = [] } = useTabCategories();
   const [selected, setSelected] = useState<string | null>(initialGroup);
-  const [category, setCategory] = useState<string>('Заняття');
-  const [adding, setAdding] = useState(false);
+  const [category, setCategory] = useState<string | null>(null);
+  const [addingTab, setAddingTab] = useState(false);
+  const [addingCat, setAddingCat] = useState(false);
   const [newName, setNewName] = useState('');
-  const [catBusy, setCatBusy] = useState(false);
-  const [catError, setCatError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [formError, setFormError] = useState('');
   const { data = [], isError } = useSitePhotos();
-  const allCategories = [...builtIn, ...customCategories.map(c => c.name)];
-  const hasCommonPhotos = data.some(p => p.group_slug === commonGroup.slug && p.section.startsWith('groups:') && p.folder_id === null);
-  const groups = home && !hasCommonPhotos ? baseGroups : [...baseGroups, commonGroup];
+
+  const extraGroups: Group[] = customTabs.map(t => ({ ...commonGroup, slug: `custom-${t.id}`, name: t.name }));
+  const hasPhotos = (slug: string) => data.some(p => p.group_slug === slug && p.section.startsWith('groups:') && p.folder_id === null);
+  const hasCommonPhotos = hasPhotos(commonGroup.slug);
+  const showCommon = !(home && !hasCommonPhotos);
+  const groups = [
+    ...baseGroups,
+    ...(home ? extraGroups.filter(g => hasPhotos(g.slug)) : extraGroups),
+    ...(showCommon ? [commonGroup] : []),
+  ];
   const active = home ? (selected ?? groups[0]?.slug ?? null) : selected;
-  const section = sectionFor(category);
   const group = groups.find(g => g.slug === active);
+
+  const virtualTab = isVirtual(selected);
+  const tabCategoryNames = tabCategories.filter(c => c.group_slug === selected).map(c => c.name);
+  const categoryList: string[] = virtualTab ? tabCategoryNames : [...categories];
+  const currentCategory = category && categoryList.includes(category) ? category : (categoryList[0] ?? null);
+  const section = currentCategory === null
+    ? ''
+    : virtualTab ? `groups:${currentCategory}` : gallerySection(currentCategory as (typeof categories)[number]);
+
   const uploaded = home
     ? data.filter(p => p.group_slug === active && p.section.startsWith('groups:') && p.folder_id === null)
     : data.filter(p => p.group_slug === active && p.section === section && p.folder_id === null);
-  const builtInFallback = (g: Group) =>
-    g.photos.filter((_, index) => category === 'Заняття' ? index === 0 || index === 3 : category === 'Дозвілля' ? index === 2 : index === 1);
   const fallback = group
-    ? (home ? group.photos : isBuiltIn(category) ? builtInFallback(group) : [])
+    ? (home
+        ? group.photos
+        : group.photos.filter((_, index) => currentCategory === 'Заняття' ? index === 0 || index === 3 : currentCategory === 'Дозвілля' ? index === 2 : index === 1))
     : groups.flatMap(g => {
         const images = data.filter(p => p.group_slug === g.slug && p.section.startsWith('groups:') && p.folder_id === null);
         const source = images.length ? images : g.photos;
@@ -76,29 +105,63 @@ export function GroupGallery({ initialGroup = null, home = false }: { initialGro
       });
   const photos = uploaded.length ? uploaded : fallback;
 
-  async function addCategory() {
+  function resetForm() {
+    setAddingTab(false);
+    setAddingCat(false);
+    setNewName('');
+    setFormError('');
+  }
+
+  async function addTab() {
     const name = newName.trim();
     if (!name) return;
-    if (allCategories.some(c => c.toLowerCase() === name.toLowerCase())) {
-      setCatError('Така категорія вже є.');
+    if ([...baseGroups, commonGroup, ...extraGroups].some(g => g.name.toLowerCase() === name.toLowerCase())) {
+      setFormError('Така вкладка вже є.');
       return;
     }
-    setCatBusy(true);
-    setCatError('');
+    setBusy(true);
+    setFormError('');
     try {
-      const { error } = await categoriesTable().insert({ name, sort_order: customCategories.length });
+      const { error } = await tabsTable().insert({ name, sort_order: customTabs.length });
       if (error) throw error;
       await queryClient.invalidateQueries({ queryKey: ['gallery-categories'] });
-      setCategory(name);
-      setNewName('');
-      setAdding(false);
+      resetForm();
     } catch (e) {
       console.error(e);
-      setCatError('Не вдалося додати категорію. Спробуйте ще раз.');
+      setFormError('Не вдалося додати вкладку. Спробуйте ще раз.');
     } finally {
-      setCatBusy(false);
+      setBusy(false);
     }
   }
+
+  async function addCategory() {
+    const name = newName.trim();
+    if (!name || !selected) return;
+    if (tabCategoryNames.some(n => n.toLowerCase() === name.toLowerCase())) {
+      setFormError('Така категорія вже є.');
+      return;
+    }
+    setBusy(true);
+    setFormError('');
+    try {
+      const { error } = await tabCategoriesTable().insert({ group_slug: selected, name, sort_order: tabCategoryNames.length });
+      if (error) throw error;
+      await queryClient.invalidateQueries({ queryKey: ['gallery-tab-categories'] });
+      setCategory(name);
+      resetForm();
+    } catch (e) {
+      console.error(e);
+      setFormError('Не вдалося додати категорію. Спробуйте ще раз.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const nameForm = (label: string, onSave: () => void) => <form className="flex items-center gap-2" onSubmit={e => { e.preventDefault(); onSave(); }}>
+    <Input aria-label={label} placeholder={label} value={newName} onChange={e => setNewName(e.target.value)} maxLength={30} required autoFocus className="w-44" />
+    <Button type="submit" size="icon" disabled={busy || !newName.trim()} aria-label="Зберегти" title="Зберегти"><Check /></Button>
+    <Button type="button" variant="outline" size="icon" aria-label="Скасувати" title="Скасувати" onClick={resetForm}><X /></Button>
+  </form>;
 
   return <div>
     <div className="mb-5 flex flex-wrap items-center gap-2">
@@ -112,22 +175,25 @@ export function GroupGallery({ initialGroup = null, home = false }: { initialGro
           className="border-primary-deep font-display font-bold"
         >{g.name}</Button>)
       : selected ? <>
-        <Button variant="outline" size="icon" aria-label="Назад до груп" title="Назад до груп" onClick={() => setSelected(null)}><ArrowLeft /></Button>
+        <Button variant="outline" size="icon" aria-label="Назад до груп" title="Назад до груп" onClick={() => { setSelected(null); setCategory(null); resetForm(); }}><ArrowLeft /></Button>
         <span className="mr-2 font-display font-bold text-primary-deep">{group?.name}</span>
-        {allCategories.map(cat => <Button key={cat} variant={category === cat ? 'default' : 'outline'} aria-pressed={category === cat} onClick={() => setCategory(cat)}>{cat}</Button>)}
-        {admin && (adding
-          ? <form className="flex items-center gap-2" onSubmit={e => { e.preventDefault(); void addCategory(); }}>
-              <Input aria-label="Назва категорії" placeholder="Назва категорії" value={newName} onChange={e => setNewName(e.target.value)} maxLength={30} required autoFocus className="w-44" />
-              <Button type="submit" size="icon" disabled={catBusy || !newName.trim()} aria-label="Зберегти категорію" title="Зберегти категорію"><Check /></Button>
-              <Button type="button" variant="outline" size="icon" aria-label="Скасувати" title="Скасувати" onClick={() => { setAdding(false); setNewName(''); setCatError(''); }}><X /></Button>
-            </form>
-          : <Button variant="outline" onClick={() => setAdding(true)}><Plus />Нова категорія</Button>)}
-      </> : groups.map(g => <Button key={g.slug} variant="outline" onClick={() => { setSelected(g.slug); setCategory('Заняття'); }}>{g.name}</Button>)}
+        {categoryList.map(cat => <Button key={cat} variant={currentCategory === cat ? 'default' : 'outline'} aria-pressed={currentCategory === cat} onClick={() => setCategory(cat)}>{cat}</Button>)}
+        {virtualTab && admin && (addingCat
+          ? nameForm('Назва категорії', () => void addCategory())
+          : <Button variant="outline" onClick={() => { resetForm(); setAddingCat(true); }}><Plus />Нова категорія</Button>)}
+      </> : <>
+        {groups.map(g => <Button key={g.slug} variant="outline" onClick={() => { setSelected(g.slug); setCategory(null); resetForm(); }}>{g.name}</Button>)}
+        {admin && (addingTab
+          ? nameForm('Назва вкладки', () => void addTab())
+          : <Button variant="outline" onClick={() => { resetForm(); setAddingTab(true); }}><Plus />Нова вкладка</Button>)}
+      </>}
     </div>
-    {catError && <p role="alert" className="mb-3 text-destructive">{catError}</p>}
+    {formError && <p role="alert" className="mb-3 text-destructive">{formError}</p>}
     {isError && <p role="status" className="mb-3 text-muted-foreground">Не вдалося завантажити нові фото.</p>}
     {(home || !selected) && <PhotoStrip photos={photos} />}
-    {selected === 'common' && !home && uploaded.length > 0 && <div className="mb-8"><PhotoStrip photos={uploaded} /></div>}
-    {selected && !home && <GalleryFolders key={`${selected}-${category}`} groupSlug={selected} section={section} photos={data} />}
+    {selected && !home && virtualTab && currentCategory === null && <p className="text-muted-foreground">
+      {admin ? 'Тут ще немає категорій. Натисніть «Нова категорія», щоб додати першу.' : 'Тут поки що порожньо.'}
+    </p>}
+    {selected && !home && currentCategory !== null && <GalleryFolders key={`${selected}-${currentCategory}`} groupSlug={selected} section={section} photos={data} />}
   </div>;
 }
