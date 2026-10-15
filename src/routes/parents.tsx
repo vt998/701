@@ -9,6 +9,10 @@ import { groups } from "@/lib/groups";
 
 import medical_sister from "@/assets/medical_sister.jpg";
 import snidanok1 from "@/assets/snidanok1.jpg";
+import snidanok2 from "@/assets/snidanok2.jpg";
+import snidanok3 from "@/assets/snidanok3.jpg";
+import obid2 from "@/assets/obid2.jpg";
+
 import little_kid from "@/assets/little_kid.jpg";
 import playing from "@/assets/playing.jpg";
 import gallery1 from "@/assets/gallery-1.jpg";
@@ -72,15 +76,15 @@ const meals = [
     name: "Сніданок",
     photos: [
       { img: snidanok1, alt: "Сніданок у садочку" },
-      { img: kitchen, alt: "Сніданок у садочку" },
-      { img: gallery1, alt: "Сніданок у садочку" },
+      { img: snidanok2, alt: "Сніданок у садочку" },
+      { img: snidanok3, alt: "Сніданок у садочку" },
     ],
   },
   {
     name: "Обід",
     photos: [
       { img: kitchen, alt: "Обід у дитячому садочку" },
-      { img: snidanok1, alt: "Обід у дитячому садочку" },
+      { img: obid2, alt: "Обід у дитячому садочку" },
       { img: gallery2, alt: "Обід у дитячому садочку" },
     ],
   },

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Plus, Check, X } from 'lucide-react';
+import { ArrowLeft, Plus, Check, X, Trash2, Pencil } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAdminSession } from './admin-session';
 import { Button } from './ui/button';
@@ -64,6 +64,7 @@ export function GroupGallery({ initialGroup = null, home = false }: { initialGro
   const [category, setCategory] = useState<string | null>(null);
   const [addingTab, setAddingTab] = useState(false);
   const [addingCat, setAddingCat] = useState(false);
+  const [renamingCat, setRenamingCat] = useState(false);
   const [newName, setNewName] = useState('');
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState('');
@@ -108,6 +109,7 @@ export function GroupGallery({ initialGroup = null, home = false }: { initialGro
   function resetForm() {
     setAddingTab(false);
     setAddingCat(false);
+    setRenamingCat(false);
     setNewName('');
     setFormError('');
   }
@@ -157,6 +159,80 @@ export function GroupGallery({ initialGroup = null, home = false }: { initialGro
     }
   }
 
+  async function renameCategory() {
+    const name = newName.trim();
+    if (!name || !selected || !currentCategory) return;
+    if (name === currentCategory) {
+      resetForm();
+      return;
+    }
+    if (tabCategoryNames.some(n => n !== currentCategory && n.toLowerCase() === name.toLowerCase())) {
+      setFormError('Така категорія вже є.');
+      return;
+    }
+    const oldSection = `groups:${currentCategory}`;
+    const newSection = `groups:${name}`;
+    setBusy(true);
+    setFormError('');
+    let photosMoved = false;
+    let foldersMoved = false;
+    try {
+      const { error: photoError } = await supabase.from('site_photos').update({ section: newSection }).eq('group_slug', selected).eq('section', oldSection);
+      if (photoError) throw photoError;
+      photosMoved = true;
+      const { error: folderError } = await supabase.from('gallery_folders').update({ section: newSection }).eq('group_slug', selected).eq('section', oldSection);
+      if (folderError) throw folderError;
+      foldersMoved = true;
+      const { error } = await tabCategoriesTable().update({ name }).eq('group_slug', selected).eq('name', currentCategory);
+      if (error) throw error;
+      await queryClient.invalidateQueries();
+      setCategory(name);
+      resetForm();
+    } catch (e) {
+      console.error(e);
+      if (foldersMoved) await supabase.from('gallery_folders').update({ section: oldSection }).eq('group_slug', selected).eq('section', newSection);
+      if (photosMoved) await supabase.from('site_photos').update({ section: oldSection }).eq('group_slug', selected).eq('section', newSection);
+      await queryClient.invalidateQueries();
+      setFormError('Не вдалося змінити назву категорії. Спробуйте ще раз.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function deleteCategory() {
+    if (!selected || !currentCategory) return;
+    const sec = `groups:${currentCategory}`;
+    setFormError('');
+    if (data.some(p => p.group_slug === selected && p.section === sec)) {
+      setFormError('Спочатку видаліть усі фото цієї категорії.');
+      return;
+    }
+    setBusy(true);
+    try {
+      const { data: folders, error: folderError } = await supabase
+        .from('gallery_folders')
+        .select('id')
+        .eq('group_slug', selected)
+        .eq('section', sec)
+        .limit(1);
+      if (folderError) throw folderError;
+      if (folders && folders.length > 0) {
+        setFormError('Спочатку видаліть усі папки цієї категорії.');
+        return;
+      }
+      if (!window.confirm(`Видалити категорію «${currentCategory}»?`)) return;
+      const { error } = await tabCategoriesTable().delete().eq('group_slug', selected).eq('name', currentCategory);
+      if (error) throw error;
+      await queryClient.invalidateQueries({ queryKey: ['gallery-tab-categories'] });
+      setCategory(null);
+    } catch (e) {
+      console.error(e);
+      setFormError('Не вдалося видалити категорію. Спробуйте ще раз.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const nameForm = (label: string, onSave: () => void) => <form className="flex items-center gap-2" onSubmit={e => { e.preventDefault(); onSave(); }}>
     <Input aria-label={label} placeholder={label} value={newName} onChange={e => setNewName(e.target.value)} maxLength={30} required autoFocus className="w-44" />
     <Button type="submit" size="icon" disabled={busy || !newName.trim()} aria-label="Зберегти" title="Зберегти"><Check /></Button>
@@ -177,8 +253,29 @@ export function GroupGallery({ initialGroup = null, home = false }: { initialGro
       : selected ? <>
         <Button variant="outline" size="icon" aria-label="Назад до груп" title="Назад до груп" onClick={() => { setSelected(null); setCategory(null); resetForm(); }}><ArrowLeft /></Button>
         <span className="mr-2 font-display font-bold text-primary-deep">{group?.name}</span>
-        {categoryList.map(cat => <Button key={cat} variant={currentCategory === cat ? 'default' : 'outline'} aria-pressed={currentCategory === cat} onClick={() => setCategory(cat)}>{cat}</Button>)}
-        {virtualTab && admin && (addingCat
+        {categoryList.map(cat => <Button key={cat} variant={currentCategory === cat ? 'default' : 'outline'} aria-pressed={currentCategory === cat} onClick={() => { setCategory(cat); resetForm(); }}>{cat}</Button>)}
+        {virtualTab && admin && currentCategory !== null && !renamingCat && <>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            disabled={busy}
+            aria-label={`Змінити назву категорії ${currentCategory}`}
+            title={`Змінити назву «${currentCategory}»`}
+            onClick={() => { resetForm(); setNewName(currentCategory); setRenamingCat(true); }}
+          ><Pencil /></Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            disabled={busy}
+            aria-label={`Видалити категорію ${currentCategory}`}
+            title={`Видалити категорію «${currentCategory}»`}
+            onClick={() => void deleteCategory()}
+          ><Trash2 /></Button>
+        </>}
+        {virtualTab && admin && renamingCat && nameForm('Нова назва категорії', () => void renameCategory())}
+        {virtualTab && admin && !renamingCat && (addingCat
           ? nameForm('Назва категорії', () => void addCategory())
           : <Button variant="outline" onClick={() => { resetForm(); setAddingCat(true); }}><Plus />Нова категорія</Button>)}
       </> : <>

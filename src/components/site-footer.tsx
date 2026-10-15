@@ -15,7 +15,7 @@ export function SiteFooter() {
         <div className="flex flex-col gap-4 pt-4 lg:flex-row lg:items-center lg:justify-between">
           <p className={`hidden md:block ${item}`}>Зроблено з турботою про кожну дитину</p>
           <nav aria-label="Посилання внизу сторінки" className="flex flex-col items-start gap-3 md:flex-row md:flex-wrap md:items-center md:gap-x-6">
-            <Link to="/privacy" className={`${item} hover:underline`}>Політика конфіденційності</Link>
+            {/* <Link to="/privacy" className={`${item} hover:underline`}>Політика конфіденційності</Link> */}
           
          {/* <Link to="/accessibility" className={`${item} hover:underline`}>Доступність</Link> */}
             <a href={FB} target="_blank" rel="noreferrer" className={`${item} hover:underline`}>Facebook</a>
