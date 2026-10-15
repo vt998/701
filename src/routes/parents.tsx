@@ -1,4 +1,3 @@
-
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -7,10 +6,9 @@ import { Button } from "@/components/ui/button";
 import { ZoomImage } from "@/components/zoom-image";
 
 import { groups } from "@/lib/groups";
-import { weekdayShortNames } from "@/lib/gallery-rules";
 
 import medical_sister from "@/assets/medical_sister.jpg";
-import kid from "@/assets/painting.jpg";
+import snidanok1 from "@/assets/snidanok1.jpg";
 import little_kid from "@/assets/little_kid.jpg";
 import playing from "@/assets/playing.jpg";
 import gallery1 from "@/assets/gallery-1.jpg";
@@ -45,8 +43,6 @@ export const Route = createFileRoute("/parents")({
 
 const groupNames = ["Джерельце", "Струмочок", "Ромашка", "Сонечко", "Калинка"];
 
-const weekdays = ["Понеділок", "Вівторок", "Середа", "Четвер", "П’ятниця"];
-
 const adaptation = [
   {
     title: "Перші спокійні ранки",
@@ -68,10 +64,34 @@ const adaptation = [
   },
 ];
 
-const mealPhotos = [
-  { meal: "Сніданок", img: kitchen, alt: "Сніданок у садочку" },
-  { meal: "Обід", img: kid, alt: "Обід у дитячому садочку" },
-  { meal: "Вечеря", img: gallery1, alt: "Вечеря у дитячому садочку" },
+// ХАРЧУВАННЯ: тут міняєш кількість фото.
+// Щоб додати фото, скопіюй рядок { img: ..., alt: "..." }, – і встав у потрібний список.
+// Щоб прибрати, видали рядок.
+const meals = [
+  {
+    name: "Сніданок",
+    photos: [
+      { img: snidanok1, alt: "Сніданок у садочку" },
+      { img: kitchen, alt: "Сніданок у садочку" },
+      { img: gallery1, alt: "Сніданок у садочку" },
+    ],
+  },
+  {
+    name: "Обід",
+    photos: [
+      { img: kitchen, alt: "Обід у дитячому садочку" },
+      { img: snidanok1, alt: "Обід у дитячому садочку" },
+      { img: gallery2, alt: "Обід у дитячому садочку" },
+    ],
+  },
+  {
+    name: "Вечеря",
+    photos: [
+      { img: gallery1, alt: "Вечеря у дитячому садочку" },
+      { img: kitchen, alt: "Вечеря у дитячому садочку" },
+      { img: snidanok1, alt: "Вечеря у дитячому садочку" },
+    ],
+  },
 ];
 
 const medical = [
@@ -113,13 +133,13 @@ const routinePhotos = [
 ];
 
 function Parents() {
-  const [selectedMealDay, setSelectedMealDay] = useState(
-    weekdays[0] ?? "Понеділок",
-  );
+  const [selectedMeal, setSelectedMeal] = useState(meals[0]?.name ?? "Сніданок");
 
   const [selectedRoutineGroup, setSelectedRoutineGroup] = useState(
     groupNames[0] ?? "Джерельце",
   );
+
+  const mealPhotos = meals.find((m) => m.name === selectedMeal)?.photos ?? [];
 
   const routineRef = useRef<HTMLDivElement>(null);
 
@@ -189,45 +209,35 @@ function Parents() {
             Харчування
           </h2>
 
-          <div className="grid w-full grid-cols-5 gap-2 pb-2 sm:w-auto sm:min-w-[520px]">
-            {weekdays.map((day, index) => (
+          <div className="grid w-full grid-cols-3 gap-2 pb-2 sm:w-auto sm:min-w-[380px]">
+            {meals.map((meal) => (
               <Button
-                key={day}
+                key={meal.name}
                 type="button"
-                variant={selectedMealDay === day ? "default" : "outline"}
+                variant={selectedMeal === meal.name ? "default" : "outline"}
                 size="sm"
-                onClick={() => setSelectedMealDay(day)}
+                onClick={() => setSelectedMeal(meal.name)}
+                aria-pressed={selectedMeal === meal.name}
                 className="w-full border-primary-deep px-1 font-display font-bold"
               >
-                <span className="sm:hidden">
-                  {weekdayShortNames[index]}
-                </span>
-
-                <span className="hidden sm:inline">{day}</span>
+                {meal.name}
               </Button>
             ))}
           </div>
         </div>
 
         <div className="p-5 toy-card">
-          <div className="grid gap-4 md:grid-cols-3">
-            {mealPhotos.map((meal) => (
-              <article
-                key={`${selectedMealDay}-${meal.meal}`}
-                className="rounded-md bg-muted p-3"
-              >
-                <ZoomImage
-                  src={meal.img}
-                  alt={`${meal.alt}, ${selectedMealDay}`}
-                  width={816}
-                  height={816}
-                  className="aspect-video w-full rounded-md border border-primary-deep object-cover"
-                />
-
-                <h3 className="mt-3 font-display text-lg text-primary-deep">
-                  {meal.meal}
-                </h3>
-              </article>
+          {/* Скільки фото в ряду: sm:grid-cols-2 і lg:grid-cols-3 */}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {mealPhotos.map((photo, index) => (
+              <ZoomImage
+                key={`${selectedMeal}-${index}`}
+                src={photo.img}
+                alt={photo.alt}
+                width={816}
+                height={816}
+                className="aspect-video w-full rounded-md border border-primary-deep object-cover"
+              />
             ))}
           </div>
         </div>
