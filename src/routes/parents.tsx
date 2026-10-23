@@ -19,6 +19,7 @@ import playing from "@/assets/playing.jpg";
 import gallery1 from "@/assets/gallery-1.jpg";
 import gallery2 from "@/assets/gallery-2.jpg";
 import gallery3 from "@/assets/gallery-3.jpg";
+import gallery4 from "@/assets/gallery-4.jpg";
 import kitchen from "@/assets/kitchen.jpg";
 
 export const Route = createFileRoute("/parents")({
@@ -46,6 +47,18 @@ export const Route = createFileRoute("/parents")({
   component: Parents,
 });
 
+// Ці приклади-заглушки не показуємо в «Режимі дня».
+// gallery-2 лишається тільки в картці «Гра замість хвилювання» (Адаптація).
+const exampleSrcs = new Set<string>([gallery1, gallery2, gallery3, gallery4]);
+
+function PhotoPlaceholder() {
+  return (
+    <div className="grid aspect-[4/3] w-full place-items-center rounded-md bg-secondary p-4 text-center font-display text-base font-bold text-primary-deep/70">
+      Фото буде додано
+    </div>
+  );
+}
+
 const groupNames = ["Джерельце", "Струмочок", "Ромашка", "Сонечко", "Калинка"];
 
 const adaptation = [
@@ -72,7 +85,8 @@ const adaptation = [
 // ХАРЧУВАННЯ: тут міняєш кількість фото.
 // Щоб додати фото, скопіюй рядок { img: ..., alt: "..." }, – і встав у потрібний список.
 // Щоб прибрати, видали рядок. Фото показуються стрічкою з прокруткою (як у галереї).
-const meals = [
+// Рядок без img (наприклад { alt: "Вечеря" }) показує картку «Фото буде додано».
+const meals: { name: string; photos: { img?: string; alt: string }[] }[] = [
   {
     name: "Сніданок",
     photos: [
@@ -92,9 +106,9 @@ const meals = [
   {
     name: "Вечеря",
     photos: [
-      { img: gallery1, alt: "Вечеря у дитячому садочку" },
-      { img: kitchen, alt: "Вечеря у дитячому садочку" },
-      { img: snidanok1, alt: "Вечеря у дитячому садочку" },
+      { alt: "Вечеря у дитячому садочку" },
+      { alt: "Вечеря у дитячому садочку" },
+      { alt: "Вечеря у дитячому садочку" },
     ],
   },
 ];
@@ -114,20 +128,19 @@ const medical = [
   },
 ];
 
-const routinePhotos = [
+// РЕЖИМ ДНЯ: картка без img показує «Фото буде додано».
+// Щоб поставити своє фото, імпортуй його угорі й впиши в потрібний рядок: img: назва
+const routinePhotos: { title: string; img?: string; alt: string }[] = [
   {
     title: "1. Ранковий прийом",
-    img: gallery1,
     alt: "Ранкові заняття в групі",
   },
   {
     title: "2. Заняття та творчість",
-    img: gallery2,
     alt: "Творчі заняття дітей",
   },
   {
     title: "3. Прогулянка",
-    img: gallery3,
     alt: "Прогулянка на майданчику",
   },
   {
@@ -257,13 +270,17 @@ function Parents() {
               key={`${selectedMeal}-${index}`}
               className="w-[85%] shrink-0 snap-start overflow-hidden p-2 toy-card sm:w-[calc(50%-0.625rem)]"
             >
-              <ZoomImage
-                src={photo.img}
-                alt={photo.alt}
-                width={816}
-                height={816}
-                className="aspect-[4/3] w-full rounded-md object-cover"
-              />
+              {photo.img ? (
+                <ZoomImage
+                  src={photo.img}
+                  alt={photo.alt}
+                  width={816}
+                  height={816}
+                  className="aspect-[4/3] w-full rounded-md object-cover"
+                />
+              ) : (
+                <PhotoPlaceholder />
+              )}
             </article>
           ))}
         </div>
@@ -368,27 +385,34 @@ function Parents() {
           aria-label="Режим дня"
         >
           {routinePhotos.map((step, index) => {
-            const photos =
+            const photos = (
               groups.find((group) => group.name === selectedRoutineGroup)
-                ?.photos ?? [];
+                ?.photos ?? []
+            ).filter((p) => !exampleSrcs.has(p.src));
 
             const photo =
               photos.length > 0
                 ? photos[index % photos.length]
                 : undefined;
 
+            const src = photo?.src ?? step.img;
+
             return (
               <article
                 key={`${selectedRoutineGroup}-${step.title}`}
                 className="w-[85%] shrink-0 snap-start overflow-hidden p-2 toy-card sm:w-[calc(50%-0.625rem)]"
               >
-                <ZoomImage
-                  src={photo?.src ?? step.img}
-                  alt={photo?.alt ?? step.alt}
-                  width={816}
-                  height={816}
-                 className="aspect-[4/3] w-full rounded-md object-cover"
-                />
+                {src ? (
+                  <ZoomImage
+                    src={src}
+                    alt={photo?.alt ?? step.alt}
+                    width={816}
+                    height={816}
+                    className="aspect-[4/3] w-full rounded-md object-cover"
+                  />
+                ) : (
+                  <PhotoPlaceholder />
+                )}
 
                 <h3 className="mt-3 font-display text-lg text-primary-deep">
                   {step.title}

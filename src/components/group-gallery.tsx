@@ -9,6 +9,24 @@ import { GalleryFolders, PhotoStrip } from './gallery-folders';
 import { useGroups, type Group } from '@/lib/use-groups';
 import { categories, gallerySection, weeklyIndex } from '@/lib/photo-rules';
 import { useSitePhotos } from '@/lib/site-photos';
+import gallery1 from '@/assets/gallery-1.jpg';
+import gallery2 from '@/assets/gallery-2.jpg';
+import gallery3 from '@/assets/gallery-3.jpg';
+import gallery4 from '@/assets/gallery-4.jpg';
+
+// Ці приклади-заглушки не показуємо в галереї. gallery-2 лишається тільки в «Гра замість хвилювання» на «Пам'ятці».
+const exampleSrcs = new Set<string>([gallery1, gallery2, gallery3, gallery4]);
+const withoutExamples = <T extends { src: string }>(list: T[]) => list.filter(p => !exampleSrcs.has(p.src));
+
+function PhotoPlaceholder() {
+  return <div className="px-1 pb-4 pt-1">
+    <div className="w-[85%] overflow-hidden p-2 toy-card sm:w-[28rem] lg:w-[34rem]">
+      <div className="grid aspect-[4/3] place-items-center rounded-md bg-secondary p-4 text-center font-display text-base font-bold text-primary-deep/70">
+        Фото буде додано
+      </div>
+    </div>
+  </div>;
+}
 
 const commonGroup: Group = {
   slug: 'common',
@@ -95,11 +113,11 @@ export function GroupGallery({ initialGroup = null, home = false }: { initialGro
     : data.filter(p => p.group_slug === active && p.section === section && p.folder_id === null);
   const fallback = group
     ? (home
-        ? group.photos
-        : group.photos.filter((_, index) => currentCategory === 'Заняття' ? index === 0 || index === 3 : currentCategory === 'Дозвілля' ? index === 2 : index === 1))
+        ? withoutExamples(group.photos)
+        : withoutExamples(group.photos.filter((_, index) => currentCategory === 'Заняття' ? index === 0 || index === 3 : currentCategory === 'Дозвілля' ? index === 2 : index === 1)))
     : groups.flatMap(g => {
         const images = data.filter(p => p.group_slug === g.slug && p.section.startsWith('groups:') && p.folder_id === null);
-        const source = images.length ? images : g.photos;
+        const source = images.length ? images : withoutExamples(g.photos);
         if (!source.length) return [];
         const image = source[weeklyIndex(source.length, Date.now())];
         return image ? [image] : [];
@@ -292,7 +310,7 @@ export function GroupGallery({ initialGroup = null, home = false }: { initialGro
     </div>
     {formError && <p role="alert" className="mb-3 text-destructive">{formError}</p>}
     {isError && <p role="status" className="mb-3 text-muted-foreground">Не вдалося завантажити нові фото.</p>}
-    {(home || !selected) && <PhotoStrip photos={photos} />}
+    {(home || !selected) && (photos.length > 0 ? <PhotoStrip photos={photos} /> : <PhotoPlaceholder />)}
     {selected && !home && virtualTab && currentCategory === null && <p className="text-muted-foreground">
       {admin ? 'Тут ще немає категорій. Натисніть «Нова категорія», щоб додати першу.' : 'Тут поки що порожньо.'}
     </p>}
