@@ -129,14 +129,6 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const pathname = useRouterState({ select: (state) => state.location.pathname });
-  useEffect(() => {
-    if (pathname.startsWith("/admin")) return;
-    void supabase
-      .from("page_views")
-      .insert({ path: pathname.slice(0, 200) })
-      .then(() => {});
-  }, [pathname]);
 
   return (
     <QueryClientProvider client={queryClient}>
