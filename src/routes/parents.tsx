@@ -11,10 +11,16 @@ import medical_sister from "@/assets/medical_sister.jpg";
 import snidanok1 from "@/assets/snidanok1.jpg";
 import snidanok2 from "@/assets/snidanok2.jpg";
 import snidanok3 from "@/assets/snidanok3.jpg";
+import obid1 from "@/assets/obid1.jpg";
 import obid2 from "@/assets/obid2.jpg";
 import obid3 from "@/assets/obid3.jpg";
+import vecherya3 from "@/assets/vecherya1.jpg";
+import vecherya2 from "@/assets/vecherya2.jpg";
+import vecherya1 from "@/assets/vecherya3.jpg";
 
 import little_kid from "@/assets/little_kid.jpg";
+import adaptation_3 from "@/assets/adaptation_3.jpg";
+import eda from "@/assets/eda.jpg";
 import playing from "@/assets/playing.jpg";
 import gallery1 from "@/assets/gallery-1.jpg";
 import gallery2 from "@/assets/gallery-2.jpg";
@@ -98,7 +104,7 @@ const meals: { name: string; photos: { img?: string; alt: string }[] }[] = [
   {
     name: "Обід",
     photos: [
-      { img: kitchen, alt: "Обід у дитячому садочку" },
+      { img: obid1, alt: "Обід у дитячому садочку" },
       { img: obid2, alt: "Обід у дитячому садочку" },
       { img: obid3, alt: "Обід у дитячому садочку" },
     ],
@@ -106,9 +112,9 @@ const meals: { name: string; photos: { img?: string; alt: string }[] }[] = [
   {
     name: "Вечеря",
     photos: [
-      { alt: "Вечеря у дитячому садочку" },
-      { alt: "Вечеря у дитячому садочку" },
-      { alt: "Вечеря у дитячому садочку" },
+      { img: vecherya1,alt: "Вечеря у дитячому садочку" },
+      { img: vecherya2, alt: "Вечеря у дитячому садочку" },
+      { img: vecherya3, alt: "Вечеря у дитячому садочку" },
     ],
   },
 ];
@@ -123,7 +129,7 @@ const medical = [
   {
     title: "Здорове харчування",
     text: "Дбаємо про якість і безпечність продуктів, дотримання санітарних норм та організацію повноцінного харчування дітей.",
-    img: kitchen,
+    img: eda,
     alt: "Харчування у дитячому садочку",
   },
 ];
@@ -138,6 +144,7 @@ const routinePhotos: { title: string; img?: string; alt: string }[] = [
   {
     title: "2. Заняття та творчість",
     alt: "Творчі заняття дітей",
+    img: adaptation_3
   },
   {
     title: "3. Прогулянка",

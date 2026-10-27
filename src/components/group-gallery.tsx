@@ -89,13 +89,11 @@ export function GroupGallery({ initialGroup = null, home = false }: { initialGro
   const { data = [], isError } = useSitePhotos();
 
   const extraGroups: Group[] = customTabs.map(t => ({ ...commonGroup, slug: `custom-${t.id}`, name: t.name }));
-  const hasPhotos = (slug: string) => data.some(p => p.group_slug === slug && p.section.startsWith('groups:') && p.folder_id === null);
-  const hasCommonPhotos = hasPhotos(commonGroup.slug);
-  const showCommon = !(home && !hasCommonPhotos);
+  // На головній («Наше життя») показуємо лише власні вкладки та «Спільні». Окремі групи там не потрібні.
   const groups = [
-    ...baseGroups,
-    ...(home ? extraGroups.filter(g => hasPhotos(g.slug)) : extraGroups),
-    ...(showCommon ? [commonGroup] : []),
+    ...(home ? [] : baseGroups),
+    ...extraGroups,
+    commonGroup,
   ];
   const active = home ? (selected ?? groups[0]?.slug ?? null) : selected;
   const group = groups.find(g => g.slug === active);
