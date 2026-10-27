@@ -37,7 +37,7 @@ function Team() {
     if (error) throw error;
     return Promise.all((data ?? []).map(async (m) => {
       let src: string | null = null;
-      if (m.storage_path) { const { data: u } = await supabase.storage.from("site-photos").createSignedUrl(m.storage_path, 3600); if (u) src = u.signedUrl; }
+      if (m.storage_path) src = supabase.storage.from("site-photos").getPublicUrl(m.storage_path).data.publicUrl;
       return { ...m, src };
     }));
   } });
@@ -54,7 +54,7 @@ function Team() {
   const setPhoto = (m: Member, file?: File) => file && run(async () => {
     if (!isAllowedImage(file.type, file.size)) throw new Error("file");
     const path = `team/${crypto.randomUUID()}.${file.type === "image/jpeg" ? "jpg" : file.type.split("/")[1]}`;
-    const { error: up } = await supabase.storage.from("site-photos").upload(path, file, { contentType: file.type });
+    const { error: up } = await supabase.storage.from("site-photos").upload(path, file, { contentType: file.type, cacheControl: "31536000" })
     if (up) throw up;
     const { error } = await supabase.from("team_members").update({ storage_path: path }).eq("id", m.id);
     if (error) throw error;
