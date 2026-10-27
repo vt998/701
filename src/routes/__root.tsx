@@ -4,18 +4,16 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
-  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import type { ErrorComponentProps } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
 
 import { SiteHeader } from "../components/site-header";
 import { AdminSessionProvider } from "../components/admin-session";
-import { supabase } from "@/integrations/supabase/client";
 import { SiteFooter } from "../components/site-footer";
 import { AdminBar } from "../components/admin-bar";
 
