@@ -65,7 +65,7 @@ function About() {
       </section>
 
       <section className="pb-14">
-        <h2 className="mb-6 font-display text-3xl text-primary-deep">Режим дня</h2>
+        <h2 className="mb-6 font-display text-3xl text-primary-deep">Розподіл часу</h2>
         <div className="grid gap-3 sm:grid-cols-2">
           {schedule.map(([time, what]) => (
             <div key={time} className="flex items-center gap-4 p-4 toy-card">

@@ -20,6 +20,7 @@ import vecherya1 from "@/assets/vecherya3.jpg";
 
 import little_kid from "@/assets/little_kid.jpg";
 import adaptation_3 from "@/assets/adaptation_3.jpg";
+import adaptation_2 from "@/assets/adaptation_2.jpg";
 import eda from "@/assets/eda.jpg";
 import playing from "@/assets/playing.jpg";
 import gallery1 from "@/assets/gallery-1.jpg";
@@ -138,21 +139,19 @@ const medical = [
 // Щоб поставити своє фото, імпортуй його угорі й впиши в потрібний рядок: img: назва
 const routinePhotos: { title: string; img?: string; alt: string }[] = [
   {
-    title: "1. Ранковий прийом",
-    alt: "Ранкові заняття в групі",
-  },
-  {
-    title: "2. Заняття та творчість",
+    title: "1. Заняття та творчість",
     alt: "Творчі заняття дітей",
     img: adaptation_3
   },
   {
-    title: "3. Прогулянка",
+    title: "2. Прогулянка",
     alt: "Прогулянка на майданчику",
+     img: adaptation_2,
   },
   {
-    title: "4. Харчування",
+    title: "3. Харчування",
     img: kitchen,
+   
     alt: "Харчування у садочку",
   },
 ];
