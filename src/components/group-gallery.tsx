@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Plus, Check, X, Trash2, Pencil } from 'lucide-react';
+import { ArrowLeft, Plus, Check, X, Trash2, Pencil, GripVertical } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAdminSession } from './admin-session';
 import { Button } from './ui/button';
@@ -42,11 +42,14 @@ const commonGroup: Group = {
 
 type CustomTab = { id: string; name: string; sort_order: number };
 type TabCategory = { id: string; group_slug: string; name: string; sort_order: number };
+type GroupOrder = { slug: string; sort_order: number };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const tabsTable = () => (supabase as any).from('gallery_categories');
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const tabCategoriesTable = () => (supabase as any).from('gallery_tab_categories');
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const orderTable = () => (supabase as any).from('gallery_group_order');
 
 function useCustomTabs() {
   return useQuery({
@@ -70,6 +73,17 @@ function useTabCategories() {
   });
 }
 
+function useGroupOrder() {
+  return useQuery({
+    queryKey: ['gallery-group-order'],
+    queryFn: async (): Promise<GroupOrder[]> => {
+      const { data, error } = await orderTable().select('*');
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+}
+
 const isVirtual = (slug: string | null) => slug === 'common' || (slug?.startsWith('custom-') ?? false);
 
 export function GroupGallery({ initialGroup = null, home = false }: { initialGroup?: string | null; home?: boolean }) {
@@ -78,6 +92,7 @@ export function GroupGallery({ initialGroup = null, home = false }: { initialGro
   const baseGroups = useGroups();
   const { data: customTabs = [] } = useCustomTabs();
   const { data: tabCategories = [] } = useTabCategories();
+  const { data: orderRows = [] } = useGroupOrder();
   const [selected, setSelected] = useState<string | null>(initialGroup);
   const [category, setCategory] = useState<string | null>(null);
   const [addingTab, setAddingTab] = useState(false);
@@ -86,15 +101,27 @@ export function GroupGallery({ initialGroup = null, home = false }: { initialGro
   const [newName, setNewName] = useState('');
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState('');
+  const [dragSlug, setDragSlug] = useState<string | null>(null);
+  const [overSlug, setOverSlug] = useState<string | null>(null);
   const { data = [], isError } = useSitePhotos();
 
   const extraGroups: Group[] = customTabs.map(t => ({ ...commonGroup, slug: `custom-${t.id}`, name: t.name }));
   // На головній («Наше життя») показуємо лише власні вкладки та «Спільні». Окремі групи там не потрібні.
-  const groups = [
+  const unsorted = [
     ...(home ? [] : baseGroups),
     ...extraGroups,
     commonGroup,
   ];
+  // Порядок вкладок: спочатку ті, що мають збережену позицію, решта в кінці у звичайному порядку.
+  const orderMap = new Map(orderRows.map(r => [r.slug, r.sort_order]));
+  const groups = unsorted
+    .map((g, i) => ({ g, i }))
+    .sort((a, b) => {
+      const oa = orderMap.get(a.g.slug) ?? Number.MAX_SAFE_INTEGER;
+      const ob = orderMap.get(b.g.slug) ?? Number.MAX_SAFE_INTEGER;
+      return oa - ob || a.i - b.i;
+    })
+    .map(x => x.g);
   const active = home ? (selected ?? groups[0]?.slug ?? null) : selected;
   const group = groups.find(g => g.slug === active);
 
@@ -133,6 +160,36 @@ export function GroupGallery({ initialGroup = null, home = false }: { initialGro
     setRenamingCat(false);
     setNewName('');
     setFormError('');
+  }
+
+  async function saveOrder(next: Group[]) {
+    setBusy(true);
+    setFormError('');
+    try {
+      const { error } = await orderTable().upsert(next.map((g, i) => ({ slug: g.slug, sort_order: i })), { onConflict: 'slug' });
+      if (error) throw error;
+      await queryClient.invalidateQueries({ queryKey: ['gallery-group-order'] });
+    } catch (e) {
+      console.error(e);
+      setFormError('Не вдалося зберегти порядок. Спробуйте ще раз.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function dropGroup(target: string) {
+    const from = dragSlug;
+    setDragSlug(null);
+    setOverSlug(null);
+    if (!from || from === target) return;
+    const next = [...groups];
+    const fromIndex = next.findIndex(g => g.slug === from);
+    const toIndex = next.findIndex(g => g.slug === target);
+    if (fromIndex < 0 || toIndex < 0) return;
+    const [moved] = next.splice(fromIndex, 1);
+    if (!moved) return;
+    next.splice(toIndex, 0, moved);
+    void saveOrder(next);
   }
 
   async function addTab() {
@@ -300,12 +357,36 @@ export function GroupGallery({ initialGroup = null, home = false }: { initialGro
           ? nameForm('Назва категорії', () => void addCategory())
           : <Button variant="outline" onClick={() => { resetForm(); setAddingCat(true); }}><Plus />Нова категорія</Button>)}
       </> : <>
-        {groups.map(g => <Button key={g.slug} variant="outline" onClick={() => { setSelected(g.slug); setCategory(null); resetForm(); }}>{g.name}</Button>)}
+        {groups.map(g => <div
+          key={g.slug}
+          onDragOver={e => { if (admin && dragSlug) { e.preventDefault(); setOverSlug(g.slug); } }}
+          onDrop={e => { if (admin && dragSlug) { e.preventDefault(); dropGroup(g.slug); } }}
+          className={`flex items-center gap-1 rounded-md ${dragSlug === g.slug ? 'opacity-50' : ''} ${overSlug === g.slug && dragSlug && dragSlug !== g.slug ? 'ring-2 ring-primary-deep ring-offset-2 ring-offset-background' : ''}`}
+        >
+          {admin && groups.length > 1 && <span
+            draggable
+            role="button"
+            tabIndex={-1}
+            aria-label={`Перетягнути вкладку ${g.name}`}
+            title="Перетягніть, щоб змінити порядок"
+            onDragStart={e => {
+              setDragSlug(g.slug);
+              e.dataTransfer.effectAllowed = 'move';
+              e.dataTransfer.setData('text/plain', g.slug);
+              const wrapper = e.currentTarget.parentElement;
+              if (wrapper) e.dataTransfer.setDragImage(wrapper, 16, 16);
+            }}
+            onDragEnd={() => { setDragSlug(null); setOverSlug(null); }}
+            className="grid cursor-grab touch-none place-items-center rounded-md p-1 text-muted-foreground hover:bg-secondary active:cursor-grabbing"
+          ><GripVertical className="size-4" /></span>}
+          <Button variant="outline" disabled={busy} onClick={() => { setSelected(g.slug); setCategory(null); resetForm(); }}>{g.name}</Button>
+        </div>)}
         {admin && (addingTab
           ? nameForm('Назва вкладки', () => void addTab())
           : <Button variant="outline" onClick={() => { resetForm(); setAddingTab(true); }}><Plus />Нова вкладка</Button>)}
       </>}
     </div>
+    {admin && !home && !selected && groups.length > 1 && <p className="-mt-2 mb-4 text-sm text-muted-foreground">Щоб змінити порядок вкладок, перетягніть їх за значок із крапками.</p>}
     {formError && <p role="alert" className="mb-3 text-destructive">{formError}</p>}
     {isError && <p role="status" className="mb-3 text-muted-foreground">Не вдалося завантажити нові фото.</p>}
     {(home || !selected) && (photos.length > 0 ? <PhotoStrip photos={photos} /> : <PhotoPlaceholder />)}

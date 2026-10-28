@@ -4,7 +4,7 @@ import { useState } from "react";
 const nav = [
   { to: "/", label: "Головна" },
   { to: "/team", label: "Колектив" },
-  { to: "/groups", label: "Галерея" },
+  { to: "/groups", label: "Групи" },
   { to: "/parents", label: "Пам’ятка" },
   { to: "/documents", label: "Документи" },
   { to: "/contacts", label: "Контакти" },
