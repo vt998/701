@@ -5,8 +5,6 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ZoomImage } from "@/components/zoom-image";
 
-import { groups } from "@/lib/groups";
-
 import medical_sister from "@/assets/medical_sister.jpg";
 import snidanok1 from "@/assets/snidanok1.jpg";
 import snidanok2 from "@/assets/snidanok2.jpg";
@@ -23,10 +21,7 @@ import adaptation_3 from "@/assets/adaptation_3.jpg";
 import adaptation_2 from "@/assets/adaptation_2.jpg";
 import eda from "@/assets/eda.jpg";
 import playing from "@/assets/playing.jpg";
-import gallery1 from "@/assets/gallery-1.jpg";
 import gallery2 from "@/assets/gallery-2.jpg";
-import gallery3 from "@/assets/gallery-3.jpg";
-import gallery4 from "@/assets/gallery-4.jpg";
 import kitchen from "@/assets/kitchen.jpg";
 
 export const Route = createFileRoute("/parents")({
@@ -54,10 +49,6 @@ export const Route = createFileRoute("/parents")({
   component: Parents,
 });
 
-// Ці приклади-заглушки не показуємо в «Режимі дня».
-// gallery-2 лишається тільки в картці «Гра замість хвилювання» (Адаптація).
-const exampleSrcs = new Set<string>([gallery1, gallery2, gallery3, gallery4]);
-
 function PhotoPlaceholder() {
   return (
     <div className="grid aspect-[4/3] w-full place-items-center rounded-md bg-secondary p-4 text-center font-display text-base font-bold text-primary-deep/70">
@@ -65,8 +56,6 @@ function PhotoPlaceholder() {
     </div>
   );
 }
-
-const groupNames = ["Джерельце", "Струмочок", "Ромашка", "Сонечко", "Калинка"];
 
 const adaptation = [
   {
@@ -113,7 +102,7 @@ const meals: { name: string; photos: { img?: string; alt: string }[] }[] = [
   {
     name: "Вечеря",
     photos: [
-      { img: vecherya1,alt: "Вечеря у дитячому садочку" },
+      { img: vecherya1, alt: "Вечеря у дитячому садочку" },
       { img: vecherya2, alt: "Вечеря у дитячому садочку" },
       { img: vecherya3, alt: "Вечеря у дитячому садочку" },
     ],
@@ -135,33 +124,28 @@ const medical = [
   },
 ];
 
-// РЕЖИМ ДНЯ: картка без img показує «Фото буде додано».
-// Щоб поставити своє фото, імпортуй його угорі й впиши в потрібний рядок: img: назва
+// РЕЖИМ ДНЯ: однакові картки для всіх. Картка без img показує «Фото буде додано».
+// Щоб додати картку, скопіюй блок { title, alt, img } і встав у список.
 const routinePhotos: { title: string; img?: string; alt: string }[] = [
   {
     title: "1. Заняття та творчість",
     alt: "Творчі заняття дітей",
-    img: adaptation_3
+    img: adaptation_3,
   },
   {
     title: "2. Прогулянка",
     alt: "Прогулянка на майданчику",
-     img: adaptation_2,
+    img: adaptation_2,
   },
   {
     title: "3. Харчування",
-    img: kitchen,
-   
     alt: "Харчування у садочку",
+    img: kitchen,
   },
 ];
 
 function Parents() {
   const [selectedMeal, setSelectedMeal] = useState(meals[0]?.name ?? "Сніданок");
-
-  const [selectedRoutineGroup, setSelectedRoutineGroup] = useState(
-    groupNames[0] ?? "Джерельце",
-  );
 
   const mealPhotos = meals.find((m) => m.name === selectedMeal)?.photos ?? [];
 
@@ -356,103 +340,66 @@ function Parents() {
 
       {/* Режим дня */}
       <section className="pb-14">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-          <h2 className="font-display text-3xl text-primary-deep">
-            Режим дня
-          </h2>
-
-          <div className="flex max-w-full gap-2 overflow-x-auto pb-2">
-            {groupNames.map((group) => (
-              <Button
-                key={group}
-                type="button"
-                variant={
-                  selectedRoutineGroup === group ? "default" : "outline"
-                }
-                size="sm"
-                onClick={() => {
-                  setSelectedRoutineGroup(group);
-                  routineRef.current?.scrollTo({
-                    left: 0,
-                    behavior: "smooth",
-                  });
-                }}
-                className="shrink-0 border-primary-deep font-display font-bold"
-              >
-                {group}
-              </Button>
-            ))}
-          </div>
-        </div>
+        <h2 className="mb-6 font-display text-3xl text-primary-deep">
+          Режим дня
+        </h2>
 
         <div
           ref={routineRef}
           className="flex snap-x gap-5 overflow-x-auto px-1 pb-4 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           aria-label="Режим дня"
         >
-          {routinePhotos.map((step, index) => {
-            const photos = (
-              groups.find((group) => group.name === selectedRoutineGroup)
-                ?.photos ?? []
-            ).filter((p) => !exampleSrcs.has(p.src));
+          {routinePhotos.map((step) => (
+            <article
+              key={step.title}
+              className="w-[85%] shrink-0 snap-start overflow-hidden p-2 toy-card sm:w-[calc(50%-0.625rem)]"
+            >
+              {step.img ? (
+                <ZoomImage
+                  src={step.img}
+                  alt={step.alt}
+                  width={816}
+                  height={816}
+                  className="aspect-[4/3] w-full rounded-md object-cover"
+                />
+              ) : (
+                <PhotoPlaceholder />
+              )}
 
-            const photo =
-              photos.length > 0
-                ? photos[index % photos.length]
-                : undefined;
-
-            const src = photo?.src ?? step.img;
-
-            return (
-              <article
-                key={`${selectedRoutineGroup}-${step.title}`}
-                className="w-[85%] shrink-0 snap-start overflow-hidden p-2 toy-card sm:w-[calc(50%-0.625rem)]"
-              >
-                {src ? (
-                  <ZoomImage
-                    src={src}
-                    alt={photo?.alt ?? step.alt}
-                    width={816}
-                    height={816}
-                    className="aspect-[4/3] w-full rounded-md object-cover"
-                  />
-                ) : (
-                  <PhotoPlaceholder />
-                )}
-
-                <h3 className="mt-3 font-display text-lg text-primary-deep">
-                  {step.title}
-                </h3>
-              </article>
-            );
-          })}
+              <h3 className="mt-3 font-display text-lg text-primary-deep">
+                {step.title}
+              </h3>
+            </article>
+          ))}
         </div>
 
-        <div className="mx-auto flex w-44 justify-between sm:w-60">
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            aria-label="Назад"
-            title="Назад"
-            onClick={() => scrollRoutine(-1)}
-            className="rounded-full border-primary-deep bg-card"
-          >
-            <ArrowLeft />
-          </Button>
+        {routinePhotos.length > 1 && (
+          <div className="mx-auto flex w-44 justify-between sm:w-60">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              aria-label="Назад"
+              title="Назад"
+              onClick={() => scrollRoutine(-1)}
+              className="rounded-full border-primary-deep bg-card"
+            >
+              <ArrowLeft />
+            </Button>
 
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            aria-label="Далі"
-            title="Далі"
-            onClick={() => scrollRoutine(1)}
-            className="rounded-full border-primary-deep bg-card"
-          >
-            <ArrowRight />
-          </Button>
-        </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              aria-label="Далі"
+              title="Далі"
+              onClick={() => scrollRoutine(1)}
+              className="rounded-full border-primary-deep bg-card"
+            >
+              <ArrowRight />
+            </Button>
+          </div>
+        )}
       </section>
 
       {/* Оплата */}

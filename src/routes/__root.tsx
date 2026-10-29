@@ -1,14 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
-  Link,
   createRootRouteWithContext,
-  useRouter,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import type { ErrorComponentProps } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
 
@@ -16,63 +13,12 @@ import { SiteHeader } from "../components/site-header";
 import { AdminSessionProvider } from "../components/admin-session";
 import { SiteFooter } from "../components/site-footer";
 import { AdminBar } from "../components/admin-bar";
-
-function NotFoundComponent() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Сторінку не знайдено</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Такої сторінки не існує або вона переїхала.
-        </p>
-        <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            На головну
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ErrorComponent({ error, reset }: ErrorComponentProps) {
-  console.error(error);
-  const router = useRouter();
-
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          Сторінка не завантажилась
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Щось пішло не так. Спробуйте оновити сторінку або повернутися на головну
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Спробуйте ще раз
-          </button>
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            На головну
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
+import {
+  AuthLinkErrorBanner,
+  ErrorScreen,
+  NotFoundScreen,
+  OfflineBanner,
+} from "../components/error-screens";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -107,8 +53,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
   shellComponent: RootShell,
   component: RootComponent,
-  notFoundComponent: NotFoundComponent,
-  errorComponent: ErrorComponent,
+  notFoundComponent: NotFoundScreen,
+  errorComponent: ErrorScreen,
 });
 
 function RootShell({ children }: { children: ReactNode }) {
@@ -132,6 +78,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AdminSessionProvider>
         <div className="flex min-h-screen flex-col">
+          <AuthLinkErrorBanner />
           <AdminBar />
           <SiteHeader />
           <div className="flex-1">
@@ -140,6 +87,7 @@ function RootComponent() {
           </div>
           <SiteFooter />
         </div>
+        <OfflineBanner />
       </AdminSessionProvider>
     </QueryClientProvider>
   );

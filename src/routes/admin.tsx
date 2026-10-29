@@ -33,7 +33,7 @@ function AdminLogin() {
     event.preventDefault();
     if (email.trim().toLowerCase() !== ADMIN_EMAIL) { setMessage("Вхід дозволено лише адміністратору закладу."); return; }
     setBusy(true); setMessage("");
-    const { error } = await supabase.auth.signInWithOtp({ email: ADMIN_EMAIL, options: { shouldCreateUser: true, emailRedirectTo: `${window.location.origin}/` } });
+    const { error } = await supabase.auth.signInWithOtp({ email: ADMIN_EMAIL, options: { shouldCreateUser: false, emailRedirectTo: `${window.location.origin}/` } });
     setBusy(false);
     if (error) { setMessage("Не вдалося надіслати лист. Спробуйте ще раз за хвилину."); return; }
     setSent(true);
