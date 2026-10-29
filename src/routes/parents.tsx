@@ -28,11 +28,7 @@ export const Route = createFileRoute("/parents")({
   head: () => ({
     meta: [
       { title: "Пам’ятка для батьків — ЗДО № 701" },
-      {
-        name: "description",
-        content:
-          "Адаптація, харчування, медичне обслуговування, режим дня та оплата у ЗДО № 701.",
-      },
+      
       {
         property: "og:title",
         content: "Пам’ятка для батьків — ЗДО № 701",
@@ -184,8 +180,7 @@ function Parents() {
         </h1>
 
         <p className="mt-4 max-w-prose text-lg text-muted-foreground">
-          Усе важливе для родин: адаптація, харчування, медичне
-          обслуговування, режим дня та оплата.
+          Усе важливе для родин.
         </p>
       </section>
 

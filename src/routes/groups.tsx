@@ -28,7 +28,7 @@ function Groups() {
       <section className="py-10">
         <h1 className="font-display text-4xl text-primary-deep sm:text-5xl">Галерея за групами</h1>
         <p className="mt-4 max-w-prose text-lg text-muted-foreground">
-          Джерельце, Струмочок, Ромашка, Сонечко та Калинка — життя нашого садочка.
+         
         </p>
       </section>
 
