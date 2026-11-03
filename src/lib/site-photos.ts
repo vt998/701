@@ -1,3 +1,4 @@
+import { photoUrl } from '@/lib/media-url';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
@@ -8,7 +9,7 @@ export function useSitePhotos() {
     if (error) throw error;
     return (data ?? []).map(photo => ({
       ...photo,
-      src: supabase.storage.from('site-photos').getPublicUrl(photo.storage_path).data.publicUrl,
+      src: photoUrl(photo.storage_path),
       alt: photo.alt_text || 'Фото ЗДО № 701',
     }));
   }});
