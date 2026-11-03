@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pencil, Plus, Trash2 } from "lucide-react";
-
+import { uploadDocumentFile, deleteDocumentFile } from "@/lib/documents.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminSession } from "@/components/admin-session";
 import { Button } from "@/components/ui/button";
@@ -29,11 +29,14 @@ export const Route = createFileRoute("/documents")({
   component: Documents,
 });
 
-// Шлях, що починається з "/", це файл сайту (public/), інакше файл у сховищі Supabase
+// Шлях, що починається з "/", це файл сайту (public/), інакше файл у R2
 const isLocalPath = (path: string) => path.startsWith("/");
-const fileUrl = (path: string) =>
-  isLocalPath(path) ? path : supabase.storage.from("documents").getPublicUrl(path).data.publicUrl;
 
+const mediaBase =
+  (import.meta.env["VITE_MEDIA_BASE_URL"] as string | undefined)?.replace(/\/$/, "") ?? "";
+
+const fileUrl = (path: string) =>
+  isLocalPath(path) ? path : `${mediaBase}/documents/${encodeURIComponent(path)}`;
 function Documents() {
   const { admin } = useAdminSession();
   const queryClient = useQueryClient();
@@ -66,18 +69,12 @@ function Documents() {
     },
   });
 
-  async function uploadPdf(pdf: File) {
-    const extension = pdf.name.toLowerCase().endsWith(".pdf") ? ".pdf" : "";
-    const filePath = `${crypto.randomUUID()}${extension}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from("documents")
-      .upload(filePath, pdf, { contentType: "application/pdf", upsert: false });
-
-    if (uploadError) throw uploadError;
-
-    return filePath;
-  }
+async function uploadPdf(pdf: File) {
+  const form = new FormData();
+  form.append("file", pdf);
+  const { path } = await uploadDocumentFile({ data: form });
+  return path;
+}
 
   async function addDocument(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -106,7 +103,8 @@ function Documents() {
       });
 
       if (insertError) {
-        await supabase.storage.from("documents").remove([filePath]);
+      // було: await supabase.storage.from("documents").remove([filePath]);
+await deleteDocumentFile({ data: { path: filePath } }).catch(() => {});
         throw insertError;
       }
 
@@ -184,7 +182,8 @@ function Documents() {
 
       // Старий файл видаляємо лише якщо він був у сховищі (файли сайту не чіпаємо)
       if (newPath && !isLocalPath(oldPath)) {
-        await supabase.storage.from("documents").remove([oldPath]);
+       // було: await supabase.storage.from("documents").remove([oldPath]);
+await deleteDocumentFile({ data: { path: oldPath } }).catch(() => {});
       }
 
       setEditingId(null);
@@ -193,7 +192,8 @@ function Documents() {
       await queryClient.invalidateQueries({ queryKey: ["documents"] });
     } catch (err) {
       console.error(err);
-      if (newPath) await supabase.storage.from("documents").remove([newPath]);
+      // було: if (newPath) await supabase.storage.from("documents").remove([newPath]);
+if (newPath) await deleteDocumentFile({ data: { path: newPath } }).catch(() => {});
       setError("Не вдалося зберегти зміни. Спробуйте ще раз.");
     } finally {
       setBusy(false);
@@ -208,12 +208,8 @@ function Documents() {
 
     try {
       if (!isLocalPath(filePath)) {
-        const { error: storageError } = await supabase.storage
-          .from("documents")
-          .remove([filePath]);
-
-        if (storageError) throw storageError;
-      }
+  await deleteDocumentFile({ data: { path: filePath } });
+}
 
       const { error: deleteError } = await supabase.from("documents").delete().eq("id", id);
 
